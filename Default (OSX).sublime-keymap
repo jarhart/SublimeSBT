@@ -1,0 +1,35 @@
+[
+	{ "keys": ["ctrl+shift+o"], "command": "show_sbt" },
+
+	{ "keys": ["enter"], "command": "sbt_submit", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+d"], "command": "sbt_eot", "context": [{ "key": "in_sbt_view" }] },
+
+	{ "keys": ["backspace"], "command": "sbt_delete_left", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["shift+backspace"], "command": "sbt_delete_left", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+shift+backspace"], "command": "sbt_delete_left", "context": [{ "key": "in_sbt_view" }] },
+
+	{ "keys": ["ctrl+backspace"], "command": "sbt_delete_word_left", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["alt+backspace"], "command": "sbt_delete_word_left", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+alt+backspace"], "command": "sbt_delete_word_left", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["alt+shift+backspace"], "command": "sbt_delete_word_left", "context": [{ "key": "in_sbt_view" }] },
+
+	{ "keys": ["ctrl+delete"], "command": "sbt_delete_word_right", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["alt+delete"], "command": "sbt_delete_word_right", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+alt+delete"], "command": "sbt_delete_word_right", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["alt+shift+delete"], "command": "sbt_delete_word_right", "context": [{ "key": "in_sbt_view" }] },
+
+	{ "keys": ["super+backspace"], "command": "sbt_delete_bol", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+shift+backspace"], "command": "sbt_delete_bol", "context": [{ "key": "in_sbt_view" }] },
+
+	// Disable keys that can modify the output
+	{ "keys": ["ctrl+alt+shift+backspace"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+x"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+shift+k"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+k", "super+backspace"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+super+up"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["ctrl+super+down"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+forward_slash"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+alt+forward_slash"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+j"], "command": "noop", "context": [{ "key": "in_sbt_view" }] },
+	{ "keys": ["super+shift+d"], "command": "noop", "context": [{ "key": "in_sbt_view" }] }
+]

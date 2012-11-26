@@ -1,0 +1,5 @@
+{
+	"sbt_command" : ["sbt"],
+	"play_command" : ["play"],
+	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme"
+}
