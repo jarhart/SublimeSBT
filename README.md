@@ -22,7 +22,8 @@ palette if SublimeSBT detects that your project is an SBT project.
 **Start SBT**
 
  - Start an SBT session for the current project. If the project looks like a
-  Play Framework project, the `play` command is used instead of `sbt`.
+  Play Framework project, the `play` command is used instead of the `sbt`
+  command.
 
 **Stop SBT**
 
@@ -34,7 +35,8 @@ palette if SublimeSBT detects that your project is an SBT project.
 
 **Show SBT Output**
 
- - Show the SBT output panel if it's not already showing.
+ - Show the SBT output panel if it's not already showing. This also focuses the
+  output panel and puts the cursor at the end.
 
 **Compile, Test, Run, Start Console**
 
@@ -56,14 +58,25 @@ saved to ***Settings – User***.
 
 **sbt_command**
 
- - An array representing the command line to use to start sbt.
+ - An array representing the command line to use to start sbt. Depending on
+  your setup you may need to put the full path to the file here.
 
 **play_command**
 
  - An array representing the command line to use to start sbt for a Play
-  Framework project.
+  Framework project. Depending on your setup you may need to put the full path
+  to the file here.
 
 **color_scheme**
 
  - The color scheme to use for the output panel. Only the default foreground
   and background colors are used.
+
+Contributing
+------------
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
