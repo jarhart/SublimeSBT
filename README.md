@@ -1,10 +1,10 @@
 SublimeSBT
 ==========
-Run the [SBT](http://www.scala-sbt.org/) build tool inside
+[SBT](http://www.scala-sbt.org/) build tool integration for
 [Sublime Text 2](http://sublimetext.com/2).
 
-SublimeSBT runs SBT as an interactive REPL inside the Sublime Text 2's output
-panel.
+SublimeSBT runs SBT as an interactive REPL inside Sublime Text 2's output panel
+and highlights compile errors and test failures in the source code.
 
 Installing
 ----------
@@ -47,7 +47,12 @@ palette if SublimeSBT detects that your project is an SBT project.
 **Start Continuous Compiling, Start Continuous Testing**
 
  - Run `~ compile` or `~ test`. If SBT is currently running the command is run
- in interactive mode, otherwise it's run in batch mode.
+  in interactive mode, otherwise it's run in batch mode.
+
+**Clear Errors**
+
+ - Clear any compile errors or test failures and remove any highlighting
+  thereof.
 
 Configuring
 -----------
