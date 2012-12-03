@@ -8,5 +8,6 @@
   { "caption": "SBT: Run", "command": "sbt_command", "args": {"command": "run"} },
   { "caption": "SBT: Start Console", "command": "sbt_command", "args": {"command": "console"} },
   { "caption": "SBT: Start Continuous Compiling", "command": "sbt_command", "args": {"command": "~ compile"} },
-  { "caption": "SBT: Start Continuous Testing", "command": "sbt_command", "args": {"command": "~ test"} }
+  { "caption": "SBT: Start Continuous Testing", "command": "sbt_command", "args": {"command": "~ test"} },
+  { "caption": "SBT: Clear Errors", "command": "sbt_clear_errors" }
 ]

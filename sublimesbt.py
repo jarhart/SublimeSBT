@@ -4,6 +4,10 @@ import sublime
 from project import Project
 from sbtrunner import SbtRunner
 from sbtview import SbtView
+from outputmon import BuildOutputMonitor
+from errorreporter import ErrorReporter
+
+import functools
 
 
 class SbtCommand(sublime_plugin.WindowCommand):
@@ -13,6 +17,8 @@ class SbtCommand(sublime_plugin.WindowCommand):
         self._project = Project.get_project(self.window)
         self._runner = SbtRunner.get_runner(self.window)
         self._sbt_view = SbtView.get_sbt_view(self.window)
+        self._error_reporter = ErrorReporter.get_reporter(self.window)
+        self._monitor_compile_output = BuildOutputMonitor(self._error_reporter)
 
     def is_sbt_project(self):
         return self._project.is_sbt_project()
@@ -27,8 +33,8 @@ class SbtCommand(sublime_plugin.WindowCommand):
         self._runner.start_sbt(command,
                                on_start=self._sbt_view.start,
                                on_stop=self._sbt_view.finish,
-                               on_stdout=self._sbt_view.show_output,
-                               on_stderr=self._sbt_view.show_output)
+                               on_stdout=self._on_stdout,
+                               on_stderr=self._on_stderr)
 
     def stop_sbt(self):
         self._runner.stop_sbt()
@@ -50,6 +56,13 @@ class SbtCommand(sublime_plugin.WindowCommand):
 
     def send_to_sbt(self, cmd):
         self._runner.send_to_sbt(cmd)
+
+    def _on_stdout(self, output):
+        self._monitor_compile_output(output)
+        self._sbt_view.show_output(output)
+
+    def _on_stderr(self, output):
+        self._sbt_view.show_output(output)
 
 
 class StartSbtCommand(SbtCommand):
@@ -110,6 +123,15 @@ class SbtCommandCommand(SbtCommand):
         return self.is_sbt_project()
 
 
+class SbtClearErrorsCommand(SbtCommand):
+
+    def run(self):
+        self._error_reporter.clear()
+
+    def is_enabled(self):
+        return self.is_sbt_project()
+
+
 class SbtEotCommand(SbtCommand):
 
     def run(self):
@@ -148,9 +170,23 @@ class SbtDeleteWordRightCommand(SbtCommand):
 
 class SbtListener(sublime_plugin.EventListener):
 
+    def on_clone(self, view):
+        self._with_window(view, self._show_errors)
+
+    def on_load(self, view):
+        self._with_window(view, self._show_errors)
+
+    def on_modified(self, view):
+        self._with_window(view, self._hide_errors)
+
     def on_selection_modified(self, view):
         if SbtView.is_sbt_view(view):
             SbtView.get_sbt_view(view.window()).update_writability()
+        else:
+            self._with_window(view, self._update_status)
+
+    def on_activated(self, view):
+        self._with_window(view, self._show_errors)
 
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == "in_sbt_view":
@@ -158,3 +194,21 @@ class SbtListener(sublime_plugin.EventListener):
                 return SbtRunner.is_sbt_running_for(view.window())
             else:
                 return False
+
+    def _show_errors(self, view, window):
+        ErrorReporter.get_reporter(window).show_errors(view.file_name())
+
+    def _hide_errors(self, view, window):
+        ErrorReporter.get_reporter(window).hide_errors(view.file_name())
+
+    def _update_status(self, view, window):
+        ErrorReporter.get_reporter(window).update_status()
+
+    def _with_window(self, view, f, retries=2):
+        window = view.window()
+        if window is not None:
+            f(view, window)
+        elif retries > 0:
+            sublime.set_timeout(functools.partial(self._with_window, view, f,
+                                                  retries - 1),
+                                100)
