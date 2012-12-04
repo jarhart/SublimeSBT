@@ -23,7 +23,6 @@ class SbtRunner(object):
         return cls.get_runner(window).is_sbt_running()
 
     def __init__(self, window):
-        self.settings = sublime.load_settings('SublimeSBT.sublime-settings')
         self._project = Project.get_project(window)
         self._proc = None
 
@@ -31,10 +30,7 @@ class SbtRunner(object):
         return self._project.project_root()
 
     def sbt_command(self, command):
-        if self._project.is_play_project():
-            cmdline = self.settings.get('play_command')
-        else:
-            cmdline = self.settings.get('sbt_command')
+        cmdline = self._project.sbt_command()
         if command is not None:
             cmdline.append(command)
         return cmdline

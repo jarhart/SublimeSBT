@@ -16,7 +16,6 @@ class ErrorReporter(object):
     def __init__(self, window):
         self._window = window
         self._errors = {}
-        self.settings = sublime.load_settings('SublimeSBT.sublime-settings')
         self.region_key = 'sublimesbt_error_reporting'
         self.error_scope = 'source.scala'
 

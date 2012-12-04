@@ -1,3 +1,5 @@
+from sbtsettings import SBTSettings
+
 import os
 import re
 
@@ -14,6 +16,7 @@ class Project(object):
 
     def __init__(self, window):
         self.window = window
+        self.settings = SBTSettings(window)
 
     def project_root(self):
         for folder in self.window.folders():
@@ -28,6 +31,15 @@ class Project(object):
             return False
         build_path = os.path.join(self.project_root(), 'project', 'Build.scala')
         return os.path.exists(build_path) and self._is_play_build(build_path)
+
+    def sbt_command(self):
+        if self.is_play_project():
+            return self.settings.play_command()
+        else:
+            return self.settings.sbt_command()
+
+    def setting(self, name):
+        return self.settings.get(name)
 
     def _is_sbt_folder(self, folder):
         return (os.path.exists(os.path.join(folder, 'build.sbt')) or

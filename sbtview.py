@@ -1,5 +1,7 @@
 import sublime
 
+from sbtsettings import SBTSettings
+
 import re
 
 
@@ -22,10 +24,10 @@ class SbtView(object):
 
     def __init__(self, window):
         self.window = window
-        self.settings = sublime.load_settings('SublimeSBT.sublime-settings')
+        self.settings = SBTSettings(window)
         self.panel = self.window.get_output_panel('sbt')
         self._update_panel_colors()
-        self.settings.add_on_change('SublimeSBT', self._update_panel_colors)
+        self.settings.add_on_change(self._update_panel_colors)
         self._output_size = 0
         self._set_running(False)
 
@@ -39,6 +41,7 @@ class SbtView(object):
         self._set_running(False)
 
     def show(self):
+        self._update_panel_colors()
         self.window.run_command('show_panel', {'panel': 'output.sbt'})
 
     def hide(self):
