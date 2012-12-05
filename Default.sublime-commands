@@ -9,5 +9,6 @@
   { "caption": "SBT: Start Console", "command": "sbt_command", "args": {"command": "console"} },
   { "caption": "SBT: Start Continuous Compiling", "command": "sbt_command", "args": {"command": "~ compile"} },
   { "caption": "SBT: Start Continuous Testing", "command": "sbt_command", "args": {"command": "~ test"} },
-  { "caption": "SBT: Clear Errors", "command": "sbt_clear_errors" }
+  { "caption": "SBT: Clear Errors", "command": "clear_sbt_errors" },
+  { "caption": "SBT: Show Error List", "command": "list_sbt_errors" }
 ]

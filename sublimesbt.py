@@ -5,7 +5,6 @@ from project import Project
 from sbtrunner import SbtRunner
 from sbtview import SbtView
 from outputmon import BuildOutputMonitor
-from errorreporter import ErrorReporter
 
 import functools
 
@@ -17,7 +16,8 @@ class SbtCommand(sublime_plugin.WindowCommand):
         self._project = Project.get_project(self.window)
         self._runner = SbtRunner.get_runner(self.window)
         self._sbt_view = SbtView.get_sbt_view(self.window)
-        self._error_reporter = ErrorReporter.get_reporter(self.window)
+        self._error_reporter = self._project.error_reporter
+        self._error_report = self._project.error_report
         self._monitor_compile_output = BuildOutputMonitor(self._error_reporter)
 
     def is_sbt_project(self):
@@ -123,13 +123,37 @@ class SbtCommandCommand(SbtCommand):
         return self.is_sbt_project()
 
 
-class SbtClearErrorsCommand(SbtCommand):
+class SbtErrorsCommand(SbtCommand):
+
+    def list_errors(self):
+        errors = list(self._error_report.all_errors())
+
+        def goto_error(index):
+            if index >= 0:
+                filename, line, _ = errors[index]
+                self.window.open_file('%s:%i' % (filename, line),
+                                      sublime.ENCODED_POSITION)
+
+        def list_item((filename, line, message)):
+            relative_path = self._project.relative_path(filename)
+            return [message, '%s:%i' % (relative_path, line)]
+
+        self.window.show_quick_panel([list_item(e) for e in errors], goto_error)
+
+    def is_enabled(self):
+        return self.is_sbt_project() and self._error_report.has_errors()
+
+
+class ClearSbtErrorsCommand(SbtErrorsCommand):
 
     def run(self):
         self._error_reporter.clear()
 
-    def is_enabled(self):
-        return self.is_sbt_project()
+
+class ListSbtErrorsCommand(SbtErrorsCommand):
+
+    def run(self):
+        self.list_errors()
 
 
 class SbtEotCommand(SbtCommand):
@@ -176,7 +200,7 @@ class SbtListener(sublime_plugin.EventListener):
     def on_load(self, view):
         self._with_window(view, self._show_errors)
 
-    def on_modified(self, view):
+    def on_post_save(self, view):
         self._with_window(view, self._hide_errors)
 
     def on_selection_modified(self, view):
@@ -196,13 +220,16 @@ class SbtListener(sublime_plugin.EventListener):
                 return False
 
     def _show_errors(self, view, window):
-        ErrorReporter.get_reporter(window).show_errors(view.file_name())
+        self._get_reporter(window).show_errors(view.file_name())
 
     def _hide_errors(self, view, window):
-        ErrorReporter.get_reporter(window).hide_errors(view.file_name())
+        self._get_reporter(window).hide_errors(view.file_name())
 
     def _update_status(self, view, window):
-        ErrorReporter.get_reporter(window).update_status()
+        self._get_reporter(window).update_status()
+
+    def _get_reporter(self, window):
+        return Project.get_project(window).error_reporter
 
     def _with_window(self, view, f, retries=2):
         window = view.window()

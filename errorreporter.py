@@ -1,38 +1,27 @@
 import sublime
 
-import os.path
-
 
 class ErrorReporter(object):
 
-    reporters = {}
-
-    @classmethod
-    def get_reporter(cls, window):
-        if window.id() not in cls.reporters:
-            cls.reporters[window.id()] = ErrorReporter(window)
-        return cls.reporters[window.id()]
-
-    def __init__(self, window):
+    def __init__(self, window, error_report, expand_filename):
         self._window = window
-        self._errors = {}
+        self._error_report = error_report
+        self._expand_filename = expand_filename
         self.region_key = 'sublimesbt_error_reporting'
         self.error_scope = 'source.scala'
 
     def start(self):
-        self._errors = {}
+        self._error_report.clear()
 
     def error(self, filename, line, message):
-        if filename not in self._errors:
-            self._errors[filename] = {}
-        file_errors = self._errors[filename]
-        file_errors[int(line)] = message
-        self._show_error(filename, [line])
+        filename = self._expand_filename(filename)
+        self._error_report.add_error(filename, line, message)
+        self._highlight_error(filename, line)
         self.update_status()
 
     def finish(self):
         for view in self._window.views():
-            view_errors = self._view_errors(view)
+            view_errors = self._error_report.errors_in(view.file_name())
             if view_errors is not None:
                 lines = sorted(view_errors.keys())
                 self._highlight(view, lines, replace=True)
@@ -40,37 +29,33 @@ class ErrorReporter(object):
                 view.erase_regions(self.region_key)
 
     def clear(self):
-        self._errors = {}
+        self._error_report.clear()
         self._erase_errors()
 
     def show_errors(self, filename):
-        file_errors = self._file_errors(filename)
+        file_errors = self._error_report.errors_in(filename)
         if file_errors is not None:
             lines = sorted(file_errors.keys())
             for view in self._file_views(filename):
                 self._highlight(view, lines, replace=True)
 
     def hide_errors(self, filename):
-        key = self._error_key(filename)
-        if key is not None:
-            del self._errors[key]
+        self._error_report.clear_file(filename)
         for view in self._file_views(filename):
             view.erase_regions(self.region_key)
 
     def update_status(self):
         view = self._window.active_view()
-        view_errors = self._view_errors(view)
-        if view_errors is not None:
-            row, _ = view.rowcol(view.sel()[0].begin())
-            line = row + 1
-            if line in view_errors:
-                view.set_status('SBT', view_errors[line])
+        if view is not None:
+            error = self._line_error(self._window.active_view())
+            if error is not None:
+                view.set_status('SBT', error)
             else:
                 view.erase_status('SBT')
 
-    def _show_error(self, filename, line):
+    def _highlight_error(self, filename, line):
         for view in self._file_views(filename):
-            self._highlight(view, line)
+            self._highlight(view, [line])
 
     def _highlight(self, view, lines, replace=False):
         if replace:
@@ -86,20 +71,9 @@ class ErrorReporter(object):
 
     def _file_views(self, filename):
         for view in self._window.views():
-            if filename in [view.file_name(), os.path.basename(view.file_name())]:
+            if filename == view.file_name():
                 yield view
 
-    def _view_errors(self, view):
-        if view is not None:
-            return self._file_errors(view.file_name())
-
-    def _file_errors(self, filename):
-        key = self._error_key(filename)
-        if key is not None:
-            return self._errors[key]
-
-    def _error_key(self, filename):
-        if filename is not None:
-            for f in [filename, os.path.basename(filename)]:
-                if f in self._errors:
-                    return f
+    def _line_error(self, view):
+        row, _ = view.rowcol(view.sel()[0].begin())
+        return self._error_report.error_at(view.file_name(), row + 1)

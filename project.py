@@ -1,4 +1,9 @@
+import sublime
+
 from sbtsettings import SBTSettings
+
+from errorreport import ErrorReport
+from errorreporter import ErrorReporter
 
 import os
 import re
@@ -17,6 +22,8 @@ class Project(object):
     def __init__(self, window):
         self.window = window
         self.settings = SBTSettings(window)
+        self.error_report = ErrorReport()
+        self.error_reporter = ErrorReporter(window, self.error_report, self.expand_filename)
 
     def project_root(self):
         for folder in self.window.folders():
@@ -41,6 +48,20 @@ class Project(object):
     def setting(self, name):
         return self.settings.get(name)
 
+    def expand_filename(self, filename):
+        if len(os.path.dirname(filename)) > 0:
+            return filename
+        else:
+            return self._find_in_project(filename)
+
+    def relative_path(self, filename):
+        return os.path.relpath(filename, self.project_root())
+
+    def open_project_file(self, filename, line):
+        full_path = os.path.join(self.project_root(), filename)
+        self.window.open_file('%s:%i' % (full_path, line),
+                              sublime.ENCODED_POSITION)
+
     def _is_sbt_folder(self, folder):
         return (os.path.exists(os.path.join(folder, 'build.sbt')) or
                 os.path.exists(os.path.join(folder, 'project', 'Build.scala')))
@@ -54,3 +75,8 @@ class Project(object):
             build_file.close()
         except:
             return False
+
+    def _find_in_project(self, filename):
+        for path, _, files in os.walk(self.project_root()):
+            if filename in files:
+                return os.path.join(path, filename)

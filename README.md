@@ -3,8 +3,15 @@ SublimeSBT
 [SBT](http://www.scala-sbt.org/) build tool integration for
 [Sublime Text 2](http://sublimetext.com/2).
 
-SublimeSBT runs SBT as an interactive REPL inside Sublime Text 2's output panel
-and highlights compile errors and test failures in the source code.
+Features
+--------
+  - Runs SBT as an interactive REPL inside Sublime Text 2's output panel.
+  - Detects compile errors and test failures in SBT's output and highlights the
+    errant lines in the source code.
+  - Lists compile errors and test failures in a quick panel for easy navigation
+    to the errant lines.
+  - Detects Play Framework projects and runs SBT using `play` instead of `sbt`.
+  - Supports project-specific configuration.
 
 Installing
 ----------
@@ -21,38 +28,43 @@ palette if SublimeSBT detects that your project is an SBT project.
 
 **Start SBT**
 
- - Start an SBT session for the current project. If the project looks like a
-  Play Framework project, the `play` command is used instead of the `sbt`
-  command.
+  - Start an SBT session for the current project. If the project looks like a
+    Play Framework project, the `play` command is used instead of the `sbt`
+    command.
 
 **Stop SBT**
 
- - Stop the currently running SBT session.
+  - Stop the currently running SBT session.
 
 **Kill SBT**
 
- - Force the currently running SBT session to stop.
+  - Force the currently running SBT session to stop.
 
 **Show SBT Output**
 
- - Show the SBT output panel if it's not already showing. This also focuses the
-  output panel and puts the cursor at the end.
+  - Show the SBT output panel if it's not already showing. This also focuses
+    the output panel and puts the cursor at the end.
 
 **Compile, Test, Run, Start Console**
 
- - Run the `compile`, `test`, `run`, or `console` SBT command. If SBT is
-  currently running the command is run in interactive mode, otherwise it's run
-  in batch mode.
+  - Run the `compile`, `test`, `run`, or `console` SBT command. If SBT is
+    currently running the command is run in interactive mode, otherwise it's
+    run in batch mode.
 
 **Start Continuous Compiling, Start Continuous Testing**
 
- - Run `~ compile` or `~ test`. If SBT is currently running the command is run
-  in interactive mode, otherwise it's run in batch mode.
+  - Run `~ compile` or `~ test`. If SBT is currently running the command is run
+    in interactive mode, otherwise it's run in batch mode.
+
+**Show Error List**
+
+  - Show a quick panel with any compile errors or test failures. Selecting an
+    error opens the file at the line with the error.
 
 **Clear Errors**
 
- - Clear any compile errors or test failures and remove any highlighting
-  thereof.
+  - Clear any compile errors or test failures and remove any highlighting
+    thereof.
 
 Configuring
 -----------
@@ -63,19 +75,19 @@ saved to ***Settings – User***.
 
 **sbt_command**
 
- - An array representing the command line to use to start sbt. Depending on
-  your setup you may need to put the full path to the file here.
+  - An array representing the command line to use to start sbt. Depending on
+    your setup you may need to put the full path to the file here.
 
 **play_command**
 
- - An array representing the command line to use to start sbt for a Play
-  Framework project. Depending on your setup you may need to put the full path
-  to the file here.
+  - An array representing the command line to use to start sbt for a Play
+    Framework project. Depending on your setup you may need to put the full
+    path to the file here.
 
 **color_scheme**
 
- - The color scheme to use for the output panel. Only the default foreground
-  and background colors are used.
+  - The color scheme to use for the output panel. Only the default foreground
+    and background colors are used.
 
 Project-specific settings can also be configured by placing them in a
 "SublimeSBT" object inside of "settings" in your sublime-project file, e.g.:
