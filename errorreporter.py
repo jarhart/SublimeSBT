@@ -28,6 +28,7 @@ class ErrorReporter(object):
         file_errors = self._errors[filename]
         file_errors[int(line)] = message
         self._show_error(filename, [line])
+        self.update_status()
 
     def finish(self):
         for view in self._window.views():
