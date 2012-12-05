@@ -17,10 +17,11 @@ class SbtView(object):
 
     @classmethod
     def is_sbt_view(cls, view):
-        window = view.window()
-        if window is not None:
-            sbt_view = cls.get_sbt_view(window)
-            return sbt_view.panel.id() == view.id()
+        if view is not None:
+            window = view.window()
+            if window is not None:
+                sbt_view = cls.get_sbt_view(window)
+                return sbt_view.panel.id() == view.id()
 
     def __init__(self, window):
         self.window = window

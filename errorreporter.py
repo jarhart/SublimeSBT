@@ -89,7 +89,8 @@ class ErrorReporter(object):
                 yield view
 
     def _view_errors(self, view):
-        return self._file_errors(view.file_name())
+        if view is not None:
+            return self._file_errors(view.file_name())
 
     def _file_errors(self, filename):
         key = self._error_key(filename)
