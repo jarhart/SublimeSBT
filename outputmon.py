@@ -10,9 +10,12 @@ class BuildOutputMonitor(object):
                           self._match_test_failure,
                           self._match_failed,
                           self._match_success]
+        self._buffer = ''
 
     def __call__(self, output):
-        for line in output.splitlines():
+        lines = re.split(r'(?:\r\n|\n|\r)', self._buffer + output)
+        self._buffer = lines[-1]
+        for line in lines[0:-1]:
             self._output_line(self._strip_terminal_codes(line))
 
     def _output_line(self, line):
