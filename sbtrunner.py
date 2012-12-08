@@ -37,13 +37,16 @@ class SbtRunner(object):
 
     def start_sbt(self, command, on_start, on_stop, on_stdout, on_stderr):
         if self.project_root() and not self.is_sbt_running():
-            self._start_sbt_proc(self.sbt_command(command))
-            on_start()
-            if self._proc.stdout:
-                thread.start_new_thread(self._monitor_output, (self._proc.stdout, on_stdout))
-            if self._proc.stderr:
-                thread.start_new_thread(self._monitor_output, (self._proc.stderr, on_stderr))
-            thread.start_new_thread(self._monitor_proc, (on_stop,))
+            self._proc = self._try_start_sbt_proc(self.sbt_command(command))
+            if self._proc is not None:
+                on_start()
+                if self._proc.stdout:
+                    thread.start_new_thread(self._monitor_output,
+                                            (self._proc.stdout, on_stdout))
+                if self._proc.stderr:
+                    thread.start_new_thread(self._monitor_output,
+                                            (self._proc.stderr, on_stderr))
+                thread.start_new_thread(self._monitor_proc, (on_stop,))
 
     def stop_sbt(self):
         if self.is_sbt_running():
@@ -61,14 +64,27 @@ class SbtRunner(object):
             self._proc.stdin.write(input)
             self._proc.stdin.flush()
 
+    def _try_start_sbt_proc(self, cmdline):
+        try:
+            return self._start_sbt_proc(cmdline)
+        except OSError:
+            msg = ('Unable to find "%s".\n\n'
+                   'You may need to specify the full path to your sbt command.'
+                   % cmdline[0])
+            sublime.error_message(msg)
+
     def _start_sbt_proc(self, cmdline):
         saved_cwd = os.getcwd()
         os.chdir(self.project_root())
-        self._proc = subprocess.Popen(cmdline,
-                                      stdin=subprocess.PIPE,
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE)
+        proc = self._popen(cmdline)
         os.chdir(saved_cwd)
+        return proc
+
+    def _popen(self, cmdline):
+        return subprocess.Popen(cmdline,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
 
     def _monitor_output(self, pipe, handle_output):
         while True:
