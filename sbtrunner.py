@@ -74,17 +74,11 @@ class SbtRunner(object):
             sublime.error_message(msg)
 
     def _start_sbt_proc(self, cmdline):
-        saved_cwd = os.getcwd()
-        os.chdir(self.project_root())
-        proc = self._popen(cmdline)
-        os.chdir(saved_cwd)
-        return proc
-
-    def _popen(self, cmdline):
         return subprocess.Popen(cmdline,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+                                stderr=subprocess.PIPE,
+                                cwd=self.project_root())
 
     def _monitor_output(self, pipe, handle_output):
         while True:
