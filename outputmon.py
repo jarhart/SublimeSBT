@@ -6,7 +6,7 @@ class BuildOutputMonitor(object):
     def __init__(self, reporter):
         self.reporter = reporter
         self._matchers = [self._match_starting,
-                          self._match_error,
+                          self._match_error_or_warning,
                           self._match_test_failure,
                           self._match_failed,
                           self._match_success]
@@ -26,8 +26,8 @@ class BuildOutputMonitor(object):
         if re.match(r'\[info\] Compiling', line):
             self.reporter.start()
 
-    def _match_error(self, line):
-        m = re.match(r'\[error\]\s+([^:]+):(\d+):\s+(.+)$', line)
+    def _match_error_or_warning(self, line):
+        m = re.match(r'\[(?:error|warn)\]\s+([^:]+):(\d+):\s+(.+)$', line)
         if m:
             self.reporter.error(m.group(1), int(m.group(2)), m.group(3))
 
