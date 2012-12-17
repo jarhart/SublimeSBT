@@ -1,3 +1,6 @@
+from util import maybe
+
+
 class ErrorReport(object):
 
     def __init__(self):
@@ -17,13 +20,16 @@ class ErrorReport(object):
             for line in sorted(self._errors[filename].keys()):
                 yield (filename, line, self._errors[filename][line])
 
-    def errors_in(self, filename):
-        return self._errors.get(filename)
+    def error_lines_in(self, filename):
+        for errors in maybe(self.errors_in(filename)):
+            return sorted(errors.keys())
 
     def error_at(self, filename, line):
-        file_errors = self.errors_in(filename)
-        if file_errors is not None:
-            return file_errors.get(line)
+        for errors in maybe(self.errors_in(filename)):
+            return errors.get(line)
+
+    def errors_in(self, filename):
+        return self._errors.get(filename)
 
     def clear_file(self, filename):
         if filename in self._errors:

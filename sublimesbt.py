@@ -5,8 +5,7 @@ from project import Project
 from sbtrunner import SbtRunner
 from sbtview import SbtView
 from outputmon import BuildOutputMonitor
-
-import functools
+from util import delayed, maybe
 
 
 class SbtCommand(sublime_plugin.WindowCommand):
@@ -59,9 +58,13 @@ class SbtCommand(sublime_plugin.WindowCommand):
 
     def _on_stdout(self, output):
         self._monitor_compile_output(output)
-        self._sbt_view.show_output(output)
+        self._show_output(output)
 
     def _on_stderr(self, output):
+        self._show_output(output)
+
+    @delayed(0)
+    def _show_output(self, output):
         self._sbt_view.show_output(output)
 
 
@@ -195,22 +198,27 @@ class SbtDeleteWordRightCommand(SbtCommand):
 class SbtListener(sublime_plugin.EventListener):
 
     def on_clone(self, view):
-        self._with_window(view, self._show_errors)
+        for reporter in maybe(self._reporter(view)):
+            reporter.show_errors(view.file_name())
 
     def on_load(self, view):
-        self._with_window(view, self._show_errors)
+        for reporter in maybe(self._reporter(view)):
+            reporter.show_errors(view.file_name())
 
     def on_post_save(self, view):
-        self._with_window(view, self._hide_errors)
+        for reporter in maybe(self._reporter(view)):
+            reporter.hide_errors(view.file_name())
 
     def on_selection_modified(self, view):
         if SbtView.is_sbt_view(view):
             SbtView.get_sbt_view(view.window()).update_writability()
         else:
-            self._with_window(view, self._update_status)
+            for reporter in maybe(self._reporter(view)):
+                reporter.update_status()
 
     def on_activated(self, view):
-        self._with_window(view, self._show_errors)
+        for reporter in maybe(self._reporter(view)):
+            reporter.show_errors(view.file_name())
 
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == "in_sbt_view":
@@ -219,23 +227,6 @@ class SbtListener(sublime_plugin.EventListener):
             else:
                 return False
 
-    def _show_errors(self, view, window):
-        self._get_reporter(window).show_errors(view.file_name())
-
-    def _hide_errors(self, view, window):
-        self._get_reporter(window).hide_errors(view.file_name())
-
-    def _update_status(self, view, window):
-        self._get_reporter(window).update_status()
-
-    def _get_reporter(self, window):
-        return Project.get_project(window).error_reporter
-
-    def _with_window(self, view, f, retries=2):
-        window = view.window()
-        if window is not None:
-            f(view, window)
-        elif retries > 0:
-            sublime.set_timeout(functools.partial(self._with_window, view, f,
-                                                  retries - 1),
-                                100)
+    def _reporter(self, view):
+        for window in maybe(view.window()):
+            return Project.get_project(window).error_reporter

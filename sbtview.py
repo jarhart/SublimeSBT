@@ -1,6 +1,7 @@
 import sublime
 
 from sbtsettings import SBTSettings
+from util import maybe
 
 import re
 
@@ -18,8 +19,7 @@ class SbtView(object):
     @classmethod
     def is_sbt_view(cls, view):
         if view is not None:
-            window = view.window()
-            if window is not None:
+            for window in maybe(view.window()):
                 sbt_view = cls.get_sbt_view(window)
                 return sbt_view.panel.id() == view.id()
 

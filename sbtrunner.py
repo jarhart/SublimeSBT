@@ -2,7 +2,6 @@ import sublime
 
 from project import Project
 
-import functools
 import os
 import subprocess
 import thread
@@ -84,7 +83,7 @@ class SbtRunner(object):
         while True:
             output = os.read(pipe.fileno(), 2 ** 15)
             if output != "":
-                sublime.set_timeout(functools.partial(handle_output, output), 0)
+                handle_output(output)
             else:
                 pipe.close()
                 return
