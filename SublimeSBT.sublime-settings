@@ -1,5 +1,18 @@
 {
+ 	// An array representing the command line to use to start sbt. Depending on
+ 	// your setup you may need to put the full path to the file here.
 	"sbt_command" : ["sbt"],
+
+	// An array representing the command line to use to start sbt for a Play
+	// Framework project. Depending on your setup you may need to put the full
+	// path to the file here.
 	"play_command" : ["play"],
+
+	// The style used to mark errors in the source code. Valid values are
+	// "dot", "outline", or "both".
+	"mark_style": "both",
+
+	// The color scheme to use for the output panel. Only the default
+	// foreground and background colors are used.
 	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme"
 }

@@ -23,7 +23,10 @@ class Project(object):
         self.window = window
         self.settings = SBTSettings(window)
         self.error_report = ErrorReport()
-        self.error_reporter = ErrorReporter(window, self.error_report, self.expand_filename)
+        self.error_reporter = ErrorReporter(window,
+                                            self.error_report,
+                                            self.settings,
+                                            self.expand_filename)
 
     def project_root(self):
         for folder in self.window.folders():

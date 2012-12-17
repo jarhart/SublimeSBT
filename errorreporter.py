@@ -5,8 +5,8 @@ from util import delayed
 
 class ErrorReporter(object):
 
-    def __init__(self, window, error_report, expand_filename):
-        self._marker = ErrorMarker(window, error_report)
+    def __init__(self, window, error_report, settings, expand_filename):
+        self._marker = ErrorMarker(window, error_report, settings)
         self._error_report = error_report
         self._expand_filename = expand_filename
 

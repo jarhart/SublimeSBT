@@ -84,6 +84,11 @@ saved to ***Settings – User***.
     Framework project. Depending on your setup you may need to put the full
     path to the file here.
 
+**mark_style**
+
+  - The style used to mark errors in the source code. Valid values are "dot",
+    "outline", or "both".
+
 **color_scheme**
 
   - The color scheme to use for the output panel. Only the default foreground

@@ -4,10 +4,11 @@ from util import delayed, maybe
 
 class ErrorMarker(object):
 
-    def __init__(self, window, error_report):
+    def __init__(self, window, error_report, settings):
         self._error_report = error_report
-        self._highlighter = CodeHighlighter()
+        self._highlighter = CodeHighlighter(settings)
         self._window = window
+        settings.add_on_change(self.mark_errors)
 
     @delayed(0)
     def mark_errors(self):
