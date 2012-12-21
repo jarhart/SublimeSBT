@@ -3,6 +3,7 @@ import sublime
 from project import Project
 
 import os
+import pipes
 import subprocess
 import thread
 
@@ -73,11 +74,24 @@ class SbtRunner(object):
             sublime.error_message(msg)
 
     def _start_sbt_proc(self, cmdline):
-        return subprocess.Popen(cmdline,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                cwd=self.project_root())
+        return self._popen(cmdline,
+                           stdin=subprocess.PIPE,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,
+                           cwd=self.project_root())
+
+    def _popen(self, cmdline, **kwargs):
+        if sublime.platform() == 'windows':
+            return self._popen_windows(cmdline, **kwargs)
+        else:
+            return self._popen_unix(cmdline, **kwargs)
+
+    def _popen_unix(self, cmdline, **kwargs):
+        cmd = ' '.join(map(pipes.quote, cmdline))
+        return subprocess.Popen(['/bin/bash', '-lc', cmd], **kwargs)
+
+    def _popen_windows(self, cmdline, **kwargs):
+        return subprocess.Popen(cmdline, **kwargs)
 
     def _monitor_output(self, pipe, handle_output):
         while True:

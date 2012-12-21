@@ -94,8 +94,9 @@ saved to ***Settings – User***.
   - The color scheme to use for the output panel. Only the default foreground
     and background colors are used.
 
-Project-specific settings can also be configured by placing them in a
-"SublimeSBT" object inside of "settings" in your sublime-project file, e.g.:
+Project-specific settings can be configured accessing the ***Project > Edit
+Project*** menu entry and by putting settings in a "SublimeSBT" object inside
+of "settings" in your project file, e.g.:
 
     {
         "folders":
@@ -108,7 +109,7 @@ Project-specific settings can also be configured by placing them in a
         {
             "SublimeSBT":
             {
-                "sbt_command": ["bash", "/Users/jarhart/scalakoansexercises/sbt"]
+                "sbt_command": ["./sbt"]
             }
         }
     }
