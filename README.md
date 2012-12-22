@@ -84,6 +84,14 @@ saved to ***Settings – User***.
     Framework project. Depending on your setup you may need to put the full
     path to the file here.
 
+**test_command**
+
+  - A string representing the sbt command to use to run tests.
+
+**run_command**
+
+  - A string representing the sbt command to use to run the project.
+
 **mark_style**
 
   - The style used to mark errors in the source code. Valid values are "dot",
@@ -109,7 +117,8 @@ of "settings" in your project file, e.g.:
         {
             "SublimeSBT":
             {
-                "sbt_command": ["./sbt"]
+                "sbt_command": ["./sbt"],
+                "test_command": "test-only org.functionalkoans.forscala.Koans"
             }
         }
     }

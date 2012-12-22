@@ -1,12 +1,18 @@
 {
  	// An array representing the command line to use to start sbt. Depending on
  	// your setup you may need to put the full path to the file here.
-	"sbt_command" : ["sbt"],
+	"sbt_command": ["sbt"],
 
 	// An array representing the command line to use to start sbt for a Play
 	// Framework project. Depending on your setup you may need to put the full
 	// path to the file here.
-	"play_command" : ["play"],
+	"play_command": ["play"],
+
+	// A string representing the sbt command to use to run tests.
+	"test_command": "test",
+
+	// A string representing the sbt command to use to run the project.
+	"run_command": "run",
 
 	// The style used to mark errors in the source code. Valid values are
 	// "dot", "outline", or "both".

@@ -56,6 +56,9 @@ class SbtCommand(sublime_plugin.WindowCommand):
     def send_to_sbt(self, cmd):
         self._runner.send_to_sbt(cmd)
 
+    def setting(self, name):
+        return self._project.setting(name)
+
     def _on_stdout(self, output):
         self._monitor_compile_output(output)
         self._show_output(output)
@@ -124,6 +127,24 @@ class SbtCommandCommand(SbtCommand):
 
     def is_enabled(self):
         return self.is_sbt_project()
+
+
+class SbtTestCommand(SbtCommandCommand):
+
+    def run(self):
+        SbtCommandCommand.run(self, self.setting('test_command'))
+
+
+class SbtContinuousTestCommand(SbtCommandCommand):
+
+    def run(self):
+        SbtCommandCommand.run(self, '~ ' + self.setting('test_command'))
+
+
+class SbtRunCommand(SbtCommandCommand):
+
+    def run(self):
+        SbtCommandCommand.run(self, self.setting('run_command'))
 
 
 class SbtErrorsCommand(SbtCommand):
