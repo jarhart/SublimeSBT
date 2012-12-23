@@ -230,6 +230,10 @@ class SbtListener(sublime_plugin.EventListener):
         for reporter in maybe(self._reporter(view)):
             reporter.hide_errors(view.file_name())
 
+    def on_modified(self, view):
+        for reporter in maybe(self._reporter(view)):
+            reporter.show_errors(view.file_name())
+
     def on_selection_modified(self, view):
         if SbtView.is_sbt_view(view):
             SbtView.get_sbt_view(view.window()).update_writability()

@@ -23,7 +23,10 @@ class ErrorMarker(object):
     def mark_errors_in(self, filename):
         for lines in maybe(self._error_report.error_lines_in(filename)):
             for view in self._file_views(filename):
-                self._highlighter.highlight(view, lines, replace=True)
+                if view.is_dirty():
+                    self._highlighter.clear(view)
+                else:
+                    self._highlighter.highlight(view, lines, replace=True)
 
     @delayed(0)
     def hide_errors_in(self, filename):
