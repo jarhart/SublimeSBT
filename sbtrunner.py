@@ -91,7 +91,7 @@ class SbtRunner(object):
         return subprocess.Popen(['/bin/bash', '-lc', cmd], **kwargs)
 
     def _popen_windows(self, cmdline, **kwargs):
-        return subprocess.Popen(cmdline, **kwargs)
+        return subprocess.Popen(cmdline, shell=True, **kwargs)
 
     def _monitor_output(self, pipe, handle_output):
         while True:

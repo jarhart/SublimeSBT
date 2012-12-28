@@ -27,7 +27,7 @@ class BuildOutputMonitor(object):
             self.reporter.start()
 
     def _match_error_or_warning(self, line):
-        m = re.match(r'\[(?:error|warn)\]\s+([^:]+):(\d+):\s+(.+)$', line)
+        m = re.match(r'\[(?:error|warn)\]\s+(.+):(\d+):\s+(.+)$', line)
         if m:
             self.reporter.error(m.group(1), int(m.group(2)), m.group(3))
 
