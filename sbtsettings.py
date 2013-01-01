@@ -1,5 +1,7 @@
 import sublime
 
+from util import maybe
+
 
 class SBTSettings(object):
 
@@ -23,4 +25,6 @@ class SBTSettings(object):
         self._plugin_settings.add_on_change('SublimeSBT', on_change)
 
     def _view_settings(self):
-        return self.window.active_view().settings().get('SublimeSBT', {})
+        for view in maybe(self.window.active_view()):
+            return view.settings().get('SublimeSBT', {})
+        return {}
