@@ -5,11 +5,9 @@ class BuildOutputMonitor(object):
 
     def __init__(self, reporter):
         self.reporter = reporter
-        self._matchers = [self._match_starting,
-                          self._match_error_or_warning,
+        self._matchers = [self._match_error_or_warning,
                           self._match_test_failure,
-                          self._match_failed,
-                          self._match_success]
+                          self._match_finished]
         self._buffer = ''
 
     def __call__(self, output):
@@ -22,10 +20,6 @@ class BuildOutputMonitor(object):
         for match in self._matchers:
             match(line)
 
-    def _match_starting(self, line):
-        if re.match(r'\[info\] Compiling', line):
-            self.reporter.start()
-
     def _match_error_or_warning(self, line):
         m = re.match(r'\[(?:error|warn)\]\s+(.+):(\d+):\s+(.+)$', line)
         if m:
@@ -36,13 +30,9 @@ class BuildOutputMonitor(object):
         if m:
             self.reporter.error(m.group(2), int(m.group(3)), m.group(1))
 
-    def _match_failed(self, line):
-        if re.match(r'\[error\] Total time:', line):
+    def _match_finished(self, line):
+        if re.match(r'\[(?:success|error)\] Total time:', line):
             self.reporter.finish()
-
-    def _match_success(self, line):
-        if re.match(r'\[success\] Total time:', line):
-            self.reporter.clear()
 
     def _strip_terminal_codes(self, line):
         return re.sub(r'\033\[[0-9;]+m', '', line)

@@ -10,9 +10,6 @@ class ErrorReporter(object):
         self._error_report = error_report
         self._expand_filename = expand_filename
 
-    def start(self):
-        self._error_report.clear()
-
     @delayed(0)
     def error(self, filename, line, message):
         filename = self._expand_filename(filename)
@@ -21,11 +18,8 @@ class ErrorReporter(object):
         self._marker.update_status()
 
     def finish(self):
+        self._error_report.cycle()
         self._marker.mark_errors()
-
-    def clear(self):
-        self._error_report.clear()
-        self._marker.clear()
 
     def show_errors(self, filename):
         self._marker.mark_errors_in(filename)
