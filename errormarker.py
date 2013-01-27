@@ -46,14 +46,17 @@ class ErrorMarker(object):
     @delayed(0)
     def update_status(self):
         for view in maybe(self._window.active_view()):
-            error = self._line_error(self._window.active_view())
-            self._highlighter.set_status_message(view, error)
+            self._highlighter.set_status_message(view, self._status_message(view))
+
+    def _status_message(self, view):
+        for errors in maybe(self._line_errors(view)):
+            return '(%s)' % ')('.join(errors)
 
     def _file_views(self, filename):
         for view in self._window.views():
             if filename == view.file_name():
                 yield view
 
-    def _line_error(self, view):
+    def _line_errors(self, view):
         row, _ = view.rowcol(view.sel()[0].begin())
-        return self._error_report.error_at(view.file_name(), row + 1)
+        return self._error_report.errors_at(view.file_name(), row + 1)

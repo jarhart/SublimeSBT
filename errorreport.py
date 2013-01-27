@@ -17,7 +17,10 @@ class ErrorReport(object):
         if filename not in self._new_errors:
             self._new_errors[filename] = {}
         file_errors = self._new_errors[filename]
-        file_errors[int(line)] = message
+        lineno = int(line)
+        if lineno not in file_errors:
+            file_errors[lineno] = []
+        file_errors[lineno].append(message)
         self._merge_errors()
 
     def cycle(self):
@@ -28,13 +31,14 @@ class ErrorReport(object):
     def all_errors(self):
         for filename in sorted(self._errors.keys()):
             for line in sorted(self._errors[filename].keys()):
-                yield (filename, line, self._errors[filename][line])
+                for message in self._errors[filename][line]:
+                    yield (filename, line, message)
 
     def error_lines_in(self, filename):
         for errors in maybe(self.errors_in(filename)):
             return sorted(errors.keys())
 
-    def error_at(self, filename, line):
+    def errors_at(self, filename, line):
         for errors in maybe(self.errors_in(filename)):
             return errors.get(line)
 
