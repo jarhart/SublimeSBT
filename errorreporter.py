@@ -17,6 +17,7 @@ class ErrorReporter(object):
         self._marker.mark_line(filename, line)
         self._marker.update_status()
 
+    @delayed(0)
     def finish(self):
         self._error_report.cycle()
         self._marker.mark_errors()
