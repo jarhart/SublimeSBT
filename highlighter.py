@@ -6,7 +6,6 @@ class CodeHighlighter(object):
     def __init__(self, settings):
         self.settings = settings
         self.region_key = 'sublimesbt_error_reporting'
-        self.region_scope = 'source.scala'
         self.status_key = 'SBT'
         self._update_highlight_args()
         settings.add_on_change(self._update_highlight_args)
@@ -42,6 +41,7 @@ class CodeHighlighter(object):
             return line
 
     def _update_highlight_args(self):
+        self.region_scope = self.settings.get('error_scope')
         style = self.settings.get('mark_style')
         self._highlight_args = self._create_highlight_args(style)
 
