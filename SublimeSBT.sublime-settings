@@ -18,6 +18,11 @@
 	// "dot", "outline", or "both".
 	"mark_style": "both",
 
+	// Region scope, which is used to highlight errors ouline.
+	// If you use "invalid.illegal", most likely it will be red,
+	// but it depends on your color scheme.
+	"error_scope": "source.scala",
+
 	// The color scheme to use for the output panel. Only the default
 	// foreground and background colors are used.
 	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme"
