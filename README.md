@@ -1,11 +1,13 @@
 SublimeSBT
 ==========
 [SBT](http://www.scala-sbt.org/) build tool integration for
-[Sublime Text 2](http://sublimetext.com/2).
+[Sublime Text 2](http://sublimetext.com/2) and
+[Sublime Text 3](http://sublimetext.com/3).
 
 Features
 --------
-  - Runs SBT as an interactive REPL inside Sublime Text 2's output panel.
+  - Compatible with Sublime Text 2 and Sublime Text 3.
+  - Runs SBT as an interactive REPL inside Sublime Text's output panel.
   - Detects compile errors and test failures in SBT's output and highlights the
     errant lines in the source code.
   - Lists compile errors and test failures in a quick panel for easy navigation
@@ -92,10 +94,17 @@ saved to ***Settings – User***.
 
   - A string representing the sbt command to use to run the project.
 
-**mark_style**
+**error\_marking, failure\_marking, warning\_marking**
 
-  - The style used to mark errors in the source code. Valid values are "dot",
-    "outline", or "both".
+  - How to mark errors, failures, and warnings in the source code:
+
+    **style**
+
+      - The mark style to use. Valid values are "dot", "outline", or "both".
+
+    **scope**
+
+      - The scope to use to color the outline.
 
 **color_scheme**
 

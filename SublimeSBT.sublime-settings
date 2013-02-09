@@ -14,13 +14,13 @@
 	// A string representing the sbt command to use to run the project.
 	"run_command": "run",
 
+	// How to mark errors in the source code.
 	"error_marking": {
 
-		// The style used to mark errors in the source code. Valid values are
-		// "dot", "outline", or "both".
+		// The mark style to us. Valid values are "dot", "outline", or "both".
 		"style": "both",
 
-		// The scope used to color the outline around marked errors.
+		// The scope used to color the outline.
 		"scope": "invalid.illegal"
 	},
 
