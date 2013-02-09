@@ -1,3 +1,8 @@
+try:
+    from .util import maybe
+except(ValueError):
+    from util import maybe
+
 import re
 
 

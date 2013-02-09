@@ -1,6 +1,9 @@
-from errormarker import ErrorMarker
-
-from util import delayed
+try:
+    from .errormarker import ErrorMarker
+    from .util import delayed
+except(ValueError):
+    from errormarker import ErrorMarker
+    from util import delayed
 
 
 class ErrorReporter(object):

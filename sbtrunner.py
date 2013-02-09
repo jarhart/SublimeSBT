@@ -1,11 +1,14 @@
 import sublime
 
-from project import Project
+try:
+    from .project import Project
+except(ValueError):
+    from project import Project
 
 import os
 import pipes
 import subprocess
-import thread
+import threading
 
 
 class SbtRunner(object):
@@ -41,12 +44,12 @@ class SbtRunner(object):
             if self._proc is not None:
                 on_start()
                 if self._proc.stdout:
-                    thread.start_new_thread(self._monitor_output,
-                                            (self._proc.stdout, on_stdout))
+                    self._start_thread(self._monitor_output,
+                                       (self._proc.stdout, on_stdout))
                 if self._proc.stderr:
-                    thread.start_new_thread(self._monitor_output,
-                                            (self._proc.stderr, on_stderr))
-                thread.start_new_thread(self._monitor_proc, (on_stop,))
+                    self._start_thread(self._monitor_output,
+                                       (self._proc.stderr, on_stderr))
+                self._start_thread(self._monitor_proc, (on_stop,))
 
     def stop_sbt(self):
         if self.is_sbt_running():
@@ -61,7 +64,7 @@ class SbtRunner(object):
 
     def send_to_sbt(self, input):
         if self.is_sbt_running():
-            self._proc.stdin.write(input)
+            self._proc.stdin.write(input.encode())
             self._proc.stdin.flush()
 
     def _try_start_sbt_proc(self, cmdline):
@@ -95,7 +98,7 @@ class SbtRunner(object):
 
     def _monitor_output(self, pipe, handle_output):
         while True:
-            output = os.read(pipe.fileno(), 2 ** 15)
+            output = os.read(pipe.fileno(), 2 ** 15).decode()
             if output != "":
                 handle_output(output)
             else:
@@ -105,3 +108,6 @@ class SbtRunner(object):
     def _monitor_proc(self, handle_stop):
         self._proc.wait()
         sublime.set_timeout(handle_stop, 0)
+
+    def _start_thread(self, target, args):
+        threading.Thread(target=target, args=args).start()

@@ -1,12 +1,18 @@
 import sublime_plugin
 import sublime
 
-from project import Project
-from sbtrunner import SbtRunner
-from sbtview import SbtView
-from outputmon import BuildOutputMonitor
-from util import delayed, maybe
-
+try:
+    from .project import Project
+    from .sbtrunner import SbtRunner
+    from .sbtview import SbtView
+    from .outputmon import BuildOutputMonitor
+    from .util import delayed, maybe
+except(ValueError):
+    from project import Project
+    from sbtrunner import SbtRunner
+    from sbtview import SbtView
+    from outputmon import BuildOutputMonitor
+    from util import delayed, maybe
 
 class SbtCommand(sublime_plugin.WindowCommand):
 

@@ -1,4 +1,7 @@
-from util import maybe
+try:
+    from .util import maybe
+except(ValueError):
+    from util import maybe
 
 
 class SbtError(object):
@@ -77,4 +80,4 @@ class ErrorReport(object):
         return len(self._errors) > 0
 
     def _merge_errors(self):
-        self._errors = dict(self._old_errors.items() + self._new_errors.items())
+        self._errors = dict(list(self._old_errors.items()) + list(self._new_errors.items()))

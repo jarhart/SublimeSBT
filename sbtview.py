@@ -1,7 +1,12 @@
 import sublime
+import sublime_plugin
 
-from sbtsettings import SBTSettings
-from util import maybe
+try:
+    from .sbtsettings import SBTSettings
+    from .util import maybe
+except(ValueError):
+    from sbtsettings import SBTSettings
+    from util import maybe
 
 import re
 
@@ -100,27 +105,16 @@ class SbtView(object):
         self.update_writability()
 
     def _append_output(self, output):
-        edit = self._begin_edit()
-        for i, s in enumerate(output.split('\r')):
-            if i > 0:
-                self.panel.replace(edit, self.panel.line(self.panel.size()), s)
-            else:
-                self.panel.insert(edit, self.panel.size(), s)
-        self._end_edit(edit)
-
-    def _begin_edit(self):
-        self.panel.set_read_only(False)
-        return self.panel.begin_edit()
-
-    def _end_edit(self, edit):
-        self.panel.end_edit(edit)
-        self.update_writability()
+        self._run_command('sbt_append_output', output=output)
 
     def _erase_output(self, *regions):
-        edit = self._begin_edit()
-        for r in reversed(regions):
-            self.panel.erase(edit, r)
-        self._end_edit(edit)
+        self._run_command('sbt_erase_output',
+                          regions=[[r.begin(), r.end()] for r in regions])
+
+    def _run_command(self, name, **kwargs):
+        self.panel.set_read_only(False)
+        self.panel.run_command(name, kwargs)
+        self.update_writability()
 
     def _clean_output(self, output):
         return self._strip_codes(self._normalize_lines(output))
@@ -133,3 +127,20 @@ class SbtView(object):
 
     def _update_panel_colors(self):
         self.panel.settings().set('color_scheme', self.settings.get('color_scheme'))
+
+
+class SbtAppendOutputCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit, output):
+        for i, s in enumerate(output.split('\r')):
+            if i > 0:
+                self.view.replace(edit, self.view.line(self.view.size()), s)
+            else:
+                self.view.insert(edit, self.view.size(), s)
+
+
+class SbtEraseOutputCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit, regions):
+        for a, b in reversed(regions):
+            self.view.erase(edit, sublime.Region(int(a), int(b)))

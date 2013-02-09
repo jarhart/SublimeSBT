@@ -1,5 +1,9 @@
-from highlighter import CodeHighlighter
-from util import delayed, maybe
+try:
+    from .highlighter import CodeHighlighter
+    from .util import delayed, maybe
+except(ValueError):
+    from highlighter import CodeHighlighter
+    from util import delayed, maybe
 
 
 class ErrorMarker(object):

@@ -1,6 +1,9 @@
 import sublime
 
-from util import maybe
+try:
+    from .util import maybe
+except(ValueError):
+    from util import maybe
 
 
 class SBTSettings(object):

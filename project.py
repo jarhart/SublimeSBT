@@ -1,9 +1,13 @@
 import sublime
 
-from sbtsettings import SBTSettings
-
-from errorreport import ErrorReport
-from errorreporter import ErrorReporter
+try:
+    from .sbtsettings import SBTSettings
+    from .errorreport import ErrorReport
+    from .errorreporter import ErrorReporter
+except(ValueError):
+    from sbtsettings import SBTSettings
+    from errorreport import ErrorReport
+    from errorreporter import ErrorReporter
 
 import os
 import re

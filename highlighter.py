@@ -1,5 +1,10 @@
 import sublime
 
+try:
+    from .util import group_by
+except(ValueError):
+    from util import group_by
+
 
 class CodeHighlighter(object):
 
