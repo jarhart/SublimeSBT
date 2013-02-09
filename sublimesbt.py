@@ -151,18 +151,14 @@ class SbtErrorsCommand(SbtCommand):
 
     def list_errors(self):
         errors = list(self._error_report.all_errors())
+        list_items = [e.list_item(self._project.relative_path) for e in errors]
 
         def goto_error(index):
             if index >= 0:
-                filename, line, _ = errors[index]
-                self.window.open_file('%s:%i' % (filename, line),
+                self.window.open_file(errors[index].encoded_position(),
                                       sublime.ENCODED_POSITION)
 
-        def list_item((filename, line, message)):
-            relative_path = self._project.relative_path(filename)
-            return [message, '%s:%i' % (relative_path, line)]
-
-        self.window.show_quick_panel([list_item(e) for e in errors], goto_error)
+        self.window.show_quick_panel(list_items, goto_error)
 
     def is_enabled(self):
         return self.is_sbt_project() and self._error_report.has_errors()

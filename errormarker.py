@@ -13,20 +13,20 @@ class ErrorMarker(object):
     @delayed(0)
     def mark_errors(self):
         for view in self._window.views():
-            lines = self._error_report.error_lines_in(view.file_name())
-            if lines is not None:
-                self._highlighter.highlight(view, lines, replace=True)
+            errors = self._error_report.sorted_errors_in(view.file_name())
+            if errors:
+                self._highlighter.highlight(view, errors, replace=True)
             else:
                 self._highlighter.clear(view)
 
     @delayed(0)
     def mark_errors_in(self, filename):
-        for lines in maybe(self._error_report.error_lines_in(filename)):
+        for errors in maybe(self._error_report.sorted_errors_in(filename)):
             for view in self._file_views(filename):
                 if view.is_dirty():
                     self._highlighter.clear(view)
                 else:
-                    self._highlighter.highlight(view, lines, replace=True)
+                    self._highlighter.highlight(view, errors, replace=True)
 
     @delayed(0)
     def hide_errors_in(self, filename):
@@ -34,9 +34,9 @@ class ErrorMarker(object):
             self._highlighter.clear(view)
 
     @delayed(0)
-    def mark_line(self, filename, line):
-        for view in self._file_views(filename):
-            self._highlighter.highlight(view, [line])
+    def mark_error(self, error):
+        for view in self._file_views(error.filename):
+            self._highlighter.highlight(view, [error])
 
     @delayed(0)
     def clear(self):
@@ -50,7 +50,7 @@ class ErrorMarker(object):
 
     def _status_message(self, view):
         for errors in maybe(self._line_errors(view)):
-            return '(%s)' % ')('.join(errors)
+            return '(%s)' % ')('.join([e.message for e in errors])
 
     def _file_views(self, filename):
         for view in self._window.views():

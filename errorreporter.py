@@ -11,10 +11,10 @@ class ErrorReporter(object):
         self._expand_filename = expand_filename
 
     @delayed(0)
-    def error(self, filename, line, message):
+    def error(self, filename, line, message, error_type='error'):
         filename = self._expand_filename(filename)
-        self._error_report.add_error(filename, line, message)
-        self._marker.mark_line(filename, line)
+        error = self._error_report.add_error(filename, line, message, error_type)
+        self._marker.mark_error(error)
         self._marker.update_status()
 
     @delayed(0)

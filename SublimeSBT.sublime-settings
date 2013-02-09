@@ -14,9 +14,25 @@
 	// A string representing the sbt command to use to run the project.
 	"run_command": "run",
 
-	// The style used to mark errors in the source code. Valid values are
-	// "dot", "outline", or "both".
-	"mark_style": "both",
+	"error_marking": {
+
+		// The style used to mark errors in the source code. Valid values are
+		// "dot", "outline", or "both".
+		"style": "both",
+
+		// The scope used to color the outline around marked errors.
+		"scope": "invalid.illegal"
+	},
+
+	"failure_marking": {
+		"style": "both",
+		"scope": "invalid.illegal"
+	},
+
+	"warning_marking": {
+		"style": "both",
+		"scope": "source.scala"
+	},
 
 	// The color scheme to use for the output panel. Only the default
 	// foreground and background colors are used.

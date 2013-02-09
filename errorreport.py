@@ -1,6 +1,22 @@
 from util import maybe
 
 
+class SbtError(object):
+
+    def __init__(self, filename, line, message, error_type='error'):
+        self.filename = filename
+        self.line = int(line)
+        self.message = message
+        self.error_type = error_type
+
+    def list_item(self, relative_path):
+        path = relative_path(self.filename)
+        return [self.message, '%s:%i' % (path, self.line)]
+
+    def encoded_position(self):
+        return '%s:%i' % (self.filename, self.line)
+
+
 class ErrorReport(object):
 
     def __init__(self):
@@ -13,15 +29,16 @@ class ErrorReport(object):
         self._old_errors.clear()
         self._new_errors.clear()
 
-    def add_error(self, filename, line, message):
+    def add_error(self, filename, line, message, error_type='error'):
+        error = SbtError(filename, line, message, error_type)
         if filename not in self._new_errors:
             self._new_errors[filename] = {}
         file_errors = self._new_errors[filename]
-        lineno = int(line)
-        if lineno not in file_errors:
-            file_errors[lineno] = []
-        file_errors[lineno].append(message)
+        if error.line not in file_errors:
+            file_errors[error.line] = []
+        file_errors[error.line].append(error)
         self._merge_errors()
+        return error
 
     def cycle(self):
         self._old_errors = self._new_errors
@@ -31,12 +48,18 @@ class ErrorReport(object):
     def all_errors(self):
         for filename in sorted(self._errors.keys()):
             for line in sorted(self._errors[filename].keys()):
-                for message in self._errors[filename][line]:
-                    yield (filename, line, message)
+                for error in self._errors[filename][line]:
+                    yield error
 
-    def error_lines_in(self, filename):
+    def sorted_errors_in(self, filename):
+
+        def sort_errors(errors):
+            for line in sorted(errors.keys()):
+                for error in sorted(errors[line], key=lambda e: e.error_type):
+                    yield error
+
         for errors in maybe(self.errors_in(filename)):
-            return sorted(errors.keys())
+            return sort_errors(errors)
 
     def errors_at(self, filename, line):
         for errors in maybe(self.errors_in(filename)):

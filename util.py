@@ -1,11 +1,20 @@
 import sublime
 
 import functools
+import itertools
 
 
 def maybe(value):
     if value is not None:
         yield value
+
+
+def group_by(xs, kf):
+    grouped = {}
+    for k, i in itertools.groupby(xs, kf):
+        grouped.setdefault(k, []).extend(i)
+    return grouped
+
 
 class delayed(object):
 
