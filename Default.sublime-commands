@@ -1,14 +1,16 @@
 [
-  { "caption": "SBT: Start SBT", "command": "start_sbt" },
-  { "caption": "SBT: Stop SBT", "command": "stop_sbt" },
-  { "caption": "SBT: Kill SBT", "command": "kill_sbt" },
-  { "caption": "SBT: Show SBT Output", "command": "show_sbt" },
-  { "caption": "SBT: Compile", "command": "sbt_command", "args": {"command": "compile"} },
-  { "caption": "SBT: Test", "command": "sbt_test" },
-  { "caption": "SBT: Run", "command": "sbt_run" },
-  { "caption": "SBT: Start Console", "command": "sbt_command", "args": {"command": "console"} },
-  { "caption": "SBT: Start Continuous Compiling", "command": "sbt_command", "args": {"command": "~ compile"} },
-  { "caption": "SBT: Start Continuous Testing", "command": "sbt_continuous_test" },
-  { "caption": "SBT: Clear Errors", "command": "clear_sbt_errors" },
-  { "caption": "SBT: Show Error List", "command": "list_sbt_errors" }
+	{ "caption": "SBT: Start SBT", "command": "start_sbt" },
+	{ "caption": "SBT: Stop SBT", "command": "stop_sbt" },
+	{ "caption": "SBT: Kill SBT", "command": "kill_sbt" },
+	{ "caption": "SBT: Show SBT Output", "command": "show_sbt" },
+	{ "caption": "SBT: Compile", "command": "sbt_command", "args": {"command": "compile"} },
+	{ "caption": "SBT: Test", "command": "sbt_test" },
+	{ "caption": "SBT: Run", "command": "sbt_run" },
+	{ "caption": "SBT: Start Console", "command": "sbt_command", "args": {"command": "console"} },
+	{ "caption": "SBT: Start Continuous Compiling", "command": "sbt_command", "args": {"command": "~ compile"} },
+	{ "caption": "SBT: Start Continuous Testing", "command": "sbt_continuous_test" },
+	{ "caption": "SBT: Show Error List", "command": "list_sbt_errors" },
+	{ "caption": "SBT: Show Next Error", "command": "next_sbt_error" },
+	{ "caption": "SBT: Clear Errors", "command": "clear_sbt_errors" },
+	{ "caption": "SBT: Show Error Output", "command": "show_sbt_error_output" }
 ]

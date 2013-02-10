@@ -1,6 +1,8 @@
 try:
+    from .sbterror import SbtError
     from .util import maybe
 except(ValueError):
+    from sbterror import SbtError
     from util import maybe
 
 import re
@@ -8,8 +10,8 @@ import re
 
 class BuildOutputMonitor(object):
 
-    def __init__(self, reporter):
-        self.reporter = reporter
+    def __init__(self, project):
+        self.project = project
         self._parsers = [ErrorParser, TestFailureParser, FinishedParser]
         self._parser = None
         self._buffer = ''
@@ -28,7 +30,7 @@ class BuildOutputMonitor(object):
 
     def _start_parsing(self, line):
         for parser_class in self._parsers:
-            for parser in parser_class.start(self.reporter, line):
+            for parser in parser_class.start(self.project, line):
                 return parser
 
     def _strip_terminal_codes(self, line):
@@ -43,81 +45,91 @@ class OutputParser(object):
 
 class AbstractErrorParser(OutputParser):
 
-    def __init__(self, reporter, line, filename, lineno, message):
-        self.reporter = reporter
+    def __init__(self, project, line, filename, lineno, message):
+        self.project = project
+        self.reporter = project.error_reporter
         self.filename = filename
         self.lineno = lineno
         self.message = message
-        self.text = []
+        self.extra_lines = []
 
     def finish(self):
-        self.reporter.error(self.filename, self.lineno, self.message, self.error_type)
+        self.reporter.error(self._error())
+
+    def _extra_line(self, line):
+        self.extra_lines.append(line)
+
+    def _error(self):
+        return SbtError(project=self.project,
+                        filename=self.filename,
+                        line=self.lineno,
+                        message=self.message,
+                        error_type=self.error_type,
+                        extra_lines=self.extra_lines)
 
 
 class ErrorParser(AbstractErrorParser):
 
     @classmethod
-    def start(cls, reporter, line):
+    def start(cls, project, line):
         for m in maybe(re.match(r'\[(error|warn)\]\s+(.+):(\d+):\s+(.+)$', line)):
-            yield cls(reporter,
+            yield cls(project,
                       line=line,
                       label=m.group(1),
                       filename=m.group(2),
                       lineno=int(m.group(3)),
                       message=m.group(4))
 
-    def __init__(self, reporter, line, label, filename, lineno, message):
-        AbstractErrorParser.__init__(self, reporter, line, filename, lineno, message)
+    def __init__(self, project, line, label, filename, lineno, message):
+        AbstractErrorParser.__init__(self, project, line, filename, lineno, message)
         if label == 'warn':
             self.error_type = 'warning'
         else:
             self.error_type = 'error'
-        for t in maybe(self._match_line(line)):
-            self.text.append(t)
 
     def parse(self, line):
-        for p in maybe(self._match_last_line(line)):
-            self.col = p
+        for t in maybe(self._match_last_line(line)):
+            self._extra_line(t)
             return self.finish()
         for t in maybe(self._match_line(line)):
-            self.text.append(t)
+            self._extra_line(t)
             return self
         return self.finish()
 
     def _match_last_line(self, line):
-        for m in maybe(re.match(r'\[(?:error|warn)\]\s(\s*)\^\s*$', line)):
-            yield len(m.group(1))
+        for m in maybe(re.match(r'\[(?:error|warn)\] (\s*\^\s*)$', line)):
+            return m.group(1)
 
     def _match_line(self, line):
         for m in maybe(re.match(r'\[(?:error|warn)\] (.*)$', line)):
-            yield m.group(1)
+            return m.group(1)
 
 
 class TestFailureParser(AbstractErrorParser):
 
     @classmethod
-    def start(cls, reporter, line):
+    def start(cls, project, line):
         for m in maybe(re.match(r'\[(?:error|info)\]\s+(.+)\s+\(([^:]+):(\d+)\)$', line)):
-            yield cls(reporter,
+            yield cls(project,
                       line=line,
                       filename=m.group(2),
-                      lineno=m.group(3),
+                      lineno=int(m.group(3)),
                       message=m.group(1))
 
-    def __init__(self, reporter, line, filename, lineno, message):
-        AbstractErrorParser.__init__(self, reporter, line, filename, lineno, message)
+    def __init__(self, project, line, filename, lineno, message):
+        AbstractErrorParser.__init__(self, project, line, filename, lineno, message)
         self.error_type = 'failure'
 
 
 class FinishedParser(OutputParser):
 
     @classmethod
-    def start(cls, reporter, line):
+    def start(cls, project, line):
         if re.match(r'\[(?:success|error)\] Total time:', line):
-            yield cls(reporter)
+            yield cls(project)
 
-    def __init__(self, reporter):
-        self.reporter = reporter
+    def __init__(self, project):
+        self.reporter = project.error_reporter
 
     def finish(self):
         self.reporter.finish()

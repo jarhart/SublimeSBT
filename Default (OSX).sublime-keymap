@@ -1,6 +1,8 @@
 [
 	{ "keys": ["ctrl+shift+o"], "command": "show_sbt" },
 	{ "keys": ["ctrl+shift+l"], "command": "list_sbt_errors" },
+	{ "keys": ["ctrl+alt+n"], "command": "next_sbt_error" },
+	{ "keys": ["ctrl+alt+o"], "command": "show_sbt_error_output" },
 
 	{ "keys": ["enter"], "command": "sbt_submit", "context": [{ "key": "in_sbt_view" }] },
 	{ "keys": ["ctrl+d"], "command": "sbt_eot", "context": [{ "key": "in_sbt_view" }] },

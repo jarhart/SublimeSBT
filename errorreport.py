@@ -1,23 +1,9 @@
 try:
+    from .sbterror import SbtError
     from .util import maybe
 except(ValueError):
+    from sbterror import SbtError
     from util import maybe
-
-
-class SbtError(object):
-
-    def __init__(self, filename, line, message, error_type='error'):
-        self.filename = filename
-        self.line = int(line)
-        self.message = message
-        self.error_type = error_type
-
-    def list_item(self, relative_path):
-        path = relative_path(self.filename)
-        return [self.message, '%s:%i' % (path, self.line)]
-
-    def encoded_position(self):
-        return '%s:%i' % (self.filename, self.line)
 
 
 class ErrorReport(object):
@@ -26,22 +12,22 @@ class ErrorReport(object):
         self._errors = {}
         self._old_errors = {}
         self._new_errors = {}
+        self._index = None
 
     def clear(self):
         self._errors.clear()
         self._old_errors.clear()
         self._new_errors.clear()
+        self._index = None
 
-    def add_error(self, filename, line, message, error_type='error'):
-        error = SbtError(filename, line, message, error_type)
-        if filename not in self._new_errors:
-            self._new_errors[filename] = {}
-        file_errors = self._new_errors[filename]
+    def add_error(self, error):
+        if error.filename not in self._new_errors:
+            self._new_errors[error.filename] = {}
+        file_errors = self._new_errors[error.filename]
         if error.line not in file_errors:
             file_errors[error.line] = []
         file_errors[error.line].append(error)
         self._merge_errors()
-        return error
 
     def cycle(self):
         self._old_errors = self._new_errors
@@ -50,9 +36,22 @@ class ErrorReport(object):
 
     def all_errors(self):
         for filename in sorted(self._errors.keys()):
-            for line in sorted(self._errors[filename].keys()):
-                for error in self._errors[filename][line]:
-                    yield error
+            for error in self.sorted_errors_in(filename):
+                yield error
+
+    def focus_error(self, error):
+        for i, e in enumerate(self.all_errors()):
+            if e == error:
+                self._index = i
+
+    def next_error(self):
+        sorted_errors = list(self.all_errors())
+        if sorted_errors:
+            if self._index is None:
+                self._index = 0
+            else:
+                self._index = (self._index + 1) % len(sorted_errors)
+            return sorted_errors[self._index]
 
     def sorted_errors_in(self, filename):
 
@@ -81,3 +80,4 @@ class ErrorReport(object):
 
     def _merge_errors(self):
         self._errors = dict(list(self._old_errors.items()) + list(self._new_errors.items()))
+        self._index = None

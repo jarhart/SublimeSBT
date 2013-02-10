@@ -8,22 +8,22 @@ except(ValueError):
 
 class ErrorReporter(object):
 
-    def __init__(self, window, error_report, settings, expand_filename):
+    def __init__(self, window, error_report, settings):
         self._marker = ErrorMarker(window, error_report, settings)
         self._error_report = error_report
-        self._expand_filename = expand_filename
 
-    @delayed(0)
-    def error(self, filename, line, message, error_type='error'):
-        filename = self._expand_filename(filename)
-        error = self._error_report.add_error(filename, line, message, error_type)
+    def error(self, error):
+        self._error_report.add_error(error)
         self._marker.mark_error(error)
         self._marker.update_status()
 
-    @delayed(0)
     def finish(self):
         self._error_report.cycle()
         self._marker.mark_errors()
+
+    def clear(self):
+        self._error_report.clear()
+        self._marker.clear()
 
     def show_errors(self, filename):
         self._marker.mark_errors_in(filename)

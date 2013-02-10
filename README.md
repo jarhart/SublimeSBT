@@ -12,6 +12,8 @@ Features
     errant lines in the source code.
   - Lists compile errors and test failures in a quick panel for easy navigation
     to the errant lines.
+  - Cycles through errors for even faster navigation.
+  - Displays the error text in an output panel for easy reading.
   - Detects Play Framework projects and runs SBT using `play` instead of `sbt`.
   - Supports project-specific configuration.
 
@@ -61,7 +63,17 @@ palette if SublimeSBT detects that your project is an SBT project.
 **Show Error List**
 
   - Show a quick panel with any compile errors or test failures. Selecting an
-    error opens the file at the line with the error.
+    error opens the file at the line with the error and shows the error text in
+    the error output panel.
+
+**Show Next Error**
+
+  - Jump to the next error in the error list. Opens the file at the line with
+    the error and shows the error text in the error output panel.
+
+**Show Error Output**
+
+  - Show the error output panel if it's not already showing.
 
 **Clear Errors**
 
@@ -131,6 +143,11 @@ of "settings" in your project file, e.g.:
             }
         }
     }
+
+Contributors
+------------
+  - [Jason Arhart](https://github.com/jarhart)
+  - [Alexey Alekhin](https://github.com/laughedelic)
 
 Contributing
 ------------

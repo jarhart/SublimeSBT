@@ -29,8 +29,7 @@ class Project(object):
         self.error_report = ErrorReport()
         self.error_reporter = ErrorReporter(window,
                                             self.error_report,
-                                            self.settings,
-                                            self.expand_filename)
+                                            self.settings)
 
     def project_root(self):
         for folder in self.window.folders():

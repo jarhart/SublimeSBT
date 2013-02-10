@@ -5,12 +5,14 @@ try:
     from .project import Project
     from .sbtrunner import SbtRunner
     from .sbtview import SbtView
+    from .errorview import ErrorView
     from .outputmon import BuildOutputMonitor
     from .util import delayed, maybe
 except(ValueError):
     from project import Project
     from sbtrunner import SbtRunner
     from sbtview import SbtView
+    from errorview import ErrorView
     from outputmon import BuildOutputMonitor
     from util import delayed, maybe
 
@@ -21,9 +23,10 @@ class SbtCommand(sublime_plugin.WindowCommand):
         self._project = Project.get_project(self.window)
         self._runner = SbtRunner.get_runner(self.window)
         self._sbt_view = SbtView.get_sbt_view(self.window)
+        self._error_view = ErrorView.get_error_view(self.window)
         self._error_reporter = self._project.error_reporter
         self._error_report = self._project.error_report
-        self._monitor_compile_output = BuildOutputMonitor(self._error_reporter)
+        self._monitor_compile_output = BuildOutputMonitor(self._project)
 
     def is_sbt_project(self):
         return self._project.is_sbt_project()
@@ -61,6 +64,19 @@ class SbtCommand(sublime_plugin.WindowCommand):
 
     def send_to_sbt(self, cmd):
         self._runner.send_to_sbt(cmd)
+
+    @delayed(0)
+    def show_error(self, error):
+        self._error_report.focus_error(error)
+        self._error_view.show_error(error)
+        self.goto_error(error)
+
+    @delayed(0)
+    def goto_error(self, error):
+        self.window.open_file(error.encoded_position(), sublime.ENCODED_POSITION)
+
+    def show_error_output(self):
+        self._error_view.show()
 
     def setting(self, name):
         return self._project.setting(name)
@@ -155,17 +171,6 @@ class SbtRunCommand(SbtCommandCommand):
 
 class SbtErrorsCommand(SbtCommand):
 
-    def list_errors(self):
-        errors = list(self._error_report.all_errors())
-        list_items = [e.list_item(self._project.relative_path) for e in errors]
-
-        def goto_error(index):
-            if index >= 0:
-                self.window.open_file(errors[index].encoded_position(),
-                                      sublime.ENCODED_POSITION)
-
-        self.window.show_quick_panel(list_items, goto_error)
-
     def is_enabled(self):
         return self.is_sbt_project() and self._error_report.has_errors()
 
@@ -179,7 +184,26 @@ class ClearSbtErrorsCommand(SbtErrorsCommand):
 class ListSbtErrorsCommand(SbtErrorsCommand):
 
     def run(self):
-        self.list_errors()
+        errors = list(self._error_report.all_errors())
+        list_items = [e.list_item() for e in errors]
+
+        def goto_error(index):
+            if index >= 0:
+                self.show_error(errors[index])
+
+        self.window.show_quick_panel(list_items, goto_error)
+
+
+class NextSbtErrorCommand(SbtErrorsCommand):
+
+    def run(self):
+        self.show_error(self._error_report.next_error())
+
+
+class ShowSbtErrorOutputCommand(SbtErrorsCommand):
+
+    def run(self):
+        self.show_error_output()
 
 
 class SbtEotCommand(SbtCommand):
