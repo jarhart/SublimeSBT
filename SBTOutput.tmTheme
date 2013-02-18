@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>SBT Output</string>
+	<key>settings</key>
+	<array>
+		<dict>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+				<string>#000000</string>
+				<key>caret</key>
+				<string>#999999</string>
+				<key>foreground</key>
+				<string>#DDDDDD</string>
+				<key>invisibles</key>
+				<string>#333333</string>
+				<key>lineHighlight</key>
+				<string>#222222</string>
+				<key>selection</key>
+				<string>#444444</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Success Label</string>
+			<key>scope</key>
+			<string>entity.label.success.sbt-output</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#00EE00</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Error Label</string>
+			<key>scope</key>
+			<string>entity.label.error.sbt-output</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#FF0000</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Warning Label</string>
+			<key>scope</key>
+			<string>entity.label.warning.sbt-output</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#DDDD00</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Output Label</string>
+			<key>scope</key>
+			<string>meta.label.sbt-output</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#AAAAAA</string>
+			</dict>
+		</dict>
+	</array>
+	<key>uuid</key>
+	<string>7b2b9f2b-a2d6-4270-8639-8c898d0fe0ef</string>
+</dict>
+</plist>

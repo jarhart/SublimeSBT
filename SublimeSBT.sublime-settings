@@ -34,7 +34,6 @@
 		"scope": "source.scala"
 	},
 
-	// The color scheme to use for the output panel. Only the default
-	// foreground and background colors are used.
-	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme"
+	// The color scheme to use for the output panel.
+	"color_scheme": "Packages/SublimeSBT/SBTOutput.tmTheme"
 }

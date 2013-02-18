@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>SBT Output</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.label.success.sbt-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>^\[(success)\]</string>
+			<key>name</key>
+			<string>meta.label.sbt-output</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.label.error.sbt-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>^\[(error)\]</string>
+			<key>name</key>
+			<string>meta.label.sbt-output</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.label.warning.sbt-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>^\[(warn)\]</string>
+			<key>name</key>
+			<string>meta.label.sbt-output</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.label.other.sbt-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>^\[([a-z]+)\]</string>
+			<key>name</key>
+			<string>meta.label.sbt-output</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>output.sbt</string>
+	<key>uuid</key>
+	<string>aeb00e40-9cfb-4b4d-96b3-767d9381eaff</string>
+</dict>
+</plist>

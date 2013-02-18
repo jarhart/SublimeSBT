@@ -13,6 +13,15 @@ import re
 
 class SbtView(object):
 
+    settings = {
+        "line_numbers": False,
+        "gutter": False,
+        "rulers": [],
+        "word_wrap": False,
+        "draw_centered": False,
+        "highlight_line": False
+    }
+
     sbt_views = {}
 
     @classmethod
@@ -32,6 +41,9 @@ class SbtView(object):
         self.window = window
         self.settings = SBTSettings(window)
         self.panel = self.window.get_output_panel('sbt')
+        self.panel.set_syntax_file("Packages/SublimeSBT/SBTOutput.tmLanguage")
+        for name, setting in SbtView.settings.items():
+            self.panel.settings().set(name, setting)
         self._update_panel_colors()
         self.settings.add_on_change(self._update_panel_colors)
         self._output_size = 0

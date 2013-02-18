@@ -120,8 +120,7 @@ saved to ***Settings – User***.
 
 **color_scheme**
 
-  - The color scheme to use for the output panel. Only the default foreground
-    and background colors are used.
+  - The color scheme to use for the output panel.
 
 Project-specific settings can be configured accessing the ***Project > Edit
 Project*** menu entry and by putting settings in a "SublimeSBT" object inside
