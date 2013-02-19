@@ -87,7 +87,7 @@ class Project(object):
         try:
             build_file = open(build_path, 'r').readlines()
             for line in build_file:
-                if re.search(r'\bPlayProject\b', line):
+                if re.search(r'\b(?:play\.|Play)Project\b', line):
                     return True
             build_file.close()
         except:
