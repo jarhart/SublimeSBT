@@ -4,13 +4,16 @@ try:
     from .sbtsettings import SBTSettings
     from .errorreport import ErrorReport
     from .errorreporter import ErrorReporter
+    from .util import maybe
 except(ValueError):
     from sbtsettings import SBTSettings
     from errorreport import ErrorReport
     from errorreporter import ErrorReporter
+    from util import maybe
 
 import os
 import re
+from glob import glob
 
 
 class Project(object):
@@ -40,10 +43,9 @@ class Project(object):
         return self.project_root() is not None
 
     def is_play_project(self):
-        if not self.is_sbt_project():
-            return False
-        build_path = os.path.join(self.project_root(), 'project', 'Build.scala')
-        return os.path.exists(build_path) and self._is_play_build(build_path)
+        for root in maybe(self.project_root()):
+            if self._play_build_files(root):
+                return True
 
     def sbt_command(self):
         if self.is_play_project():
@@ -69,11 +71,17 @@ class Project(object):
                               sublime.ENCODED_POSITION)
 
     def _is_sbt_folder(self, folder):
-        project_folder=os.path.join(folder, 'project')
-        #If there is a simple build.sbt or the project folder exists and has a scala file in it
-        return (os.path.exists(os.path.join(folder, 'build.sbt')) or
-                (os.path.isdir(project_folder) and 
-                    len([f for f in os.listdir(project_folder) if f.endswith(".scala")]) > 0))
+        if self._sbt_build_files(folder) or self._scala_build_files(folder):
+            return True
+
+    def _sbt_build_files(self, folder):
+        return glob(os.path.join(folder, '*.sbt'))
+
+    def _scala_build_files(self, folder):
+        return glob(os.path.join(folder, 'project', '*.scala'))
+
+    def _play_build_files(self, folder):
+        return filter(self._is_play_build, self._scala_build_files(folder))
 
     def _is_play_build(self, build_path):
         try:
