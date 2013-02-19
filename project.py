@@ -69,8 +69,11 @@ class Project(object):
                               sublime.ENCODED_POSITION)
 
     def _is_sbt_folder(self, folder):
+        project_folder=os.path.join(folder, 'project')
+        #If there is a simple build.sbt or the project folder exists and has a scala file in it
         return (os.path.exists(os.path.join(folder, 'build.sbt')) or
-                os.path.exists(os.path.join(folder, 'project', 'Build.scala')))
+                (os.path.isdir(project_folder) and 
+                    len([f for f in os.listdir(project_folder) if f.endswith(".scala")]) > 0))
 
     def _is_play_build(self, build_path):
         try:
