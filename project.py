@@ -81,7 +81,7 @@ class Project(object):
         return glob(os.path.join(folder, 'project', '*.scala'))
 
     def _play_build_files(self, folder):
-        return filter(self._is_play_build, self._scala_build_files(folder))
+        return list(filter(self._is_play_build, self._scala_build_files(folder)))
 
     def _is_play_build(self, build_path):
         try:
