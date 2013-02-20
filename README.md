@@ -122,7 +122,7 @@ saved to ***Settings – User***.
 
   - The color scheme to use for the output panel.
 
-Project-specific settings can be configured accessing the ***Project > Edit
+Project-specific settings can be configured by accessing the ***Project > Edit
 Project*** menu entry and by putting settings in a "SublimeSBT" object inside
 of "settings" in your project file, e.g.:
 
