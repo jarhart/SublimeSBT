@@ -85,8 +85,8 @@ class Project(object):
 
     def _is_play_build(self, build_path):
         try:
-            with open(build_path, 'r').readlines() as build_file:
-                for line in build_file:
+            with open(build_path, 'r') as build_file:
+                for line in build_file.readlines():
                     if re.search(r'\b(?:play\.|Play)Project\b', line):
                         return True
         except:
