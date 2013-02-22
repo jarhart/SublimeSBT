@@ -3,19 +3,13 @@ import sublime_plugin
 
 try:
     from .sbtsettings import SBTSettings
+    from .util import OnePerWindow
 except(ValueError):
     from sbtsettings import SBTSettings
+    from util import OnePerWindow
 
 
-class ErrorView(object):
-
-    error_views = {}
-
-    @classmethod
-    def get_error_view(cls, window):
-        if window.id() not in cls.error_views:
-            cls.error_views[window.id()] = ErrorView(window)
-        return cls.error_views[window.id()]
+class ErrorView(OnePerWindow):
 
     def __init__(self, window):
         self.window = window

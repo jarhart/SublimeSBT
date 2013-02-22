@@ -3,15 +3,15 @@ import sublime_plugin
 
 try:
     from .sbtsettings import SBTSettings
-    from .util import maybe
+    from .util import maybe, OnePerWindow
 except(ValueError):
     from sbtsettings import SBTSettings
-    from util import maybe
+    from util import maybe, OnePerWindow
 
 import re
 
 
-class SbtView(object):
+class SbtView(OnePerWindow):
 
     settings = {
         "line_numbers": False,
@@ -22,19 +22,11 @@ class SbtView(object):
         "highlight_line": False
     }
 
-    sbt_views = {}
-
-    @classmethod
-    def get_sbt_view(cls, window):
-        if window.id() not in cls.sbt_views:
-            cls.sbt_views[window.id()] = SbtView(window)
-        return cls.sbt_views[window.id()]
-
     @classmethod
     def is_sbt_view(cls, view):
         if view is not None:
             for window in maybe(view.window()):
-                sbt_view = cls.get_sbt_view(window)
+                sbt_view = cls(window)
                 return sbt_view.panel.id() == view.id()
 
     def __init__(self, window):

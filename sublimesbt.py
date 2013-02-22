@@ -20,10 +20,10 @@ class SbtCommand(sublime_plugin.WindowCommand):
 
     def __init__(self, *args):
         super(SbtCommand, self).__init__(*args)
-        self._project = Project.get_project(self.window)
-        self._runner = SbtRunner.get_runner(self.window)
-        self._sbt_view = SbtView.get_sbt_view(self.window)
-        self._error_view = ErrorView.get_error_view(self.window)
+        self._project = Project(self.window)
+        self._runner = SbtRunner(self.window)
+        self._sbt_view = SbtView(self.window)
+        self._error_view = ErrorView(self.window)
         self._error_reporter = self._project.error_reporter
         self._error_report = self._project.error_report
         self._monitor_compile_output = BuildOutputMonitor(self._project)
@@ -262,7 +262,7 @@ class SbtListener(sublime_plugin.EventListener):
 
     def on_selection_modified(self, view):
         if SbtView.is_sbt_view(view):
-            SbtView.get_sbt_view(view.window()).update_writability()
+            SbtView(view.window()).update_writability()
         else:
             for reporter in maybe(self._reporter(view)):
                 reporter.update_status()
@@ -280,4 +280,4 @@ class SbtListener(sublime_plugin.EventListener):
 
     def _reporter(self, view):
         for window in maybe(view.window()):
-            return Project.get_project(window).error_reporter
+            return Project(window).error_reporter

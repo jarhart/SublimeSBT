@@ -2,8 +2,10 @@ import sublime
 
 try:
     from .project import Project
+    from .util import OnePerWindow
 except(ValueError):
     from project import Project
+    from util import OnePerWindow
 
 import os
 import pipes
@@ -11,22 +13,14 @@ import subprocess
 import threading
 
 
-class SbtRunner(object):
-
-    runners = {}
-
-    @classmethod
-    def get_runner(cls, window):
-        if window.id() not in cls.runners:
-            cls.runners[window.id()] = SbtRunner(window)
-        return cls.runners[window.id()]
+class SbtRunner(OnePerWindow):
 
     @classmethod
     def is_sbt_running_for(cls, window):
-        return cls.get_runner(window).is_sbt_running()
+        return cls(window).is_sbt_running()
 
     def __init__(self, window):
-        self._project = Project.get_project(window)
+        self._project = Project(window)
         self._proc = None
 
     def project_root(self):

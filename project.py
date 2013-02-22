@@ -4,27 +4,19 @@ try:
     from .sbtsettings import SBTSettings
     from .errorreport import ErrorReport
     from .errorreporter import ErrorReporter
-    from .util import maybe
+    from .util import maybe, OnePerWindow
 except(ValueError):
     from sbtsettings import SBTSettings
     from errorreport import ErrorReport
     from errorreporter import ErrorReporter
-    from util import maybe
+    from util import maybe, OnePerWindow
 
 import os
 import re
 from glob import glob
 
 
-class Project(object):
-
-    projects = {}
-
-    @classmethod
-    def get_project(cls, window):
-        if window.id() not in cls.projects:
-            cls.projects[window.id()] = Project(window)
-        return cls.projects[window.id()]
+class Project(OnePerWindow):
 
     def __init__(self, window):
         self.window = window
