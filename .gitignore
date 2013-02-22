@@ -1,1 +1,5 @@
 *.pyc
+package-metadata.json
+*.tmLanguage.json
+*.tmTheme.json
+*.cache
