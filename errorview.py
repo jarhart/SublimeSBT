@@ -11,6 +11,12 @@ except(ValueError):
 
 class ErrorView(OnePerWindow):
 
+    error_type_display = {
+        'error': 'Error',
+        'warning': 'Warning',
+        'failure': 'Test Failure'
+    }
+
     def __init__(self, window):
         self.window = window
         self.settings = SBTSettings(window)
@@ -18,11 +24,6 @@ class ErrorView(OnePerWindow):
         self.panel.set_read_only(True)
         self._update_panel_colors()
         self.settings.add_on_change(self._update_panel_colors)
-        self._type_display = {
-            'error': 'Error',
-            'warning': 'Warning',
-            'failure': 'Test Failure'
-        }
 
     def show(self):
         self._update_panel_colors()
@@ -32,12 +33,15 @@ class ErrorView(OnePerWindow):
         self.window.run_command('hide_panel', {'panel': 'output.sbt_error'})
 
     def show_error(self, error):
-        banner = ' -- %s --' % self._type_display[error.error_type]
-        text = '%s\n\n%s' % (banner, error.text)
         self.show()
-        self.panel.run_command('sbt_show_error_text', {'text': text})
+        self.panel.run_command('sbt_show_error_text',
+                               {'text': self._error_text(error)})
         self.panel.sel().clear()
         self.panel.show(0)
+
+    def _error_text(self, error):
+        banner = ' -- %s --' % type(self).error_type_display[error.error_type]
+        return '%s\n\n%s' % (banner, error.text)
 
     def _update_panel_colors(self):
         self.panel.settings().set('color_scheme', self.settings.get('color_scheme'))
