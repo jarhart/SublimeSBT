@@ -55,7 +55,7 @@ class CodeHighlighter(object):
     def _create_region(self, view, lineno):
         line = view.line(view.text_point(lineno - 1, 0))
         r = view.find(r'\S', line.begin())
-        if line.contains(r):
+        if r is not None and line.contains(r):
             return sublime.Region(r.begin(), line.end())
         else:
             return line
