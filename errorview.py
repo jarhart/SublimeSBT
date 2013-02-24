@@ -22,6 +22,7 @@ class ErrorView(OnePerWindow):
         self.settings = SBTSettings(window)
         self.panel = self.window.get_output_panel('sbt_error')
         self.panel.set_read_only(True)
+        self.panel.set_syntax_file("Packages/SublimeSBT/SBTError.tmLanguage")
         self._update_panel_colors()
         self.settings.add_on_change(self._update_panel_colors)
 
@@ -41,7 +42,7 @@ class ErrorView(OnePerWindow):
 
     def _error_text(self, error):
         banner = ' -- %s --' % type(self).error_type_display[error.error_type]
-        return '%s\n\n%s' % (banner, error.text)
+        return '%s\n%s' % (banner, error.text)
 
     def _update_panel_colors(self):
         self.panel.settings().set('color_scheme', self.settings.get('color_scheme'))

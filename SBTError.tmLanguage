@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>SBT Error</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>match</key>
+			<string>-- Error --</string>
+			<key>name</key>
+			<string>entity.label.error.sbt-error</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>-- Test Failure --</string>
+			<key>name</key>
+			<string>entity.label.error.sbt-error</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>-- Warning --</string>
+			<key>name</key>
+			<string>entity.label.warning.sbt-error</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>error.sbt</string>
+	<key>uuid</key>
+	<string>dc4ce12f-5399-4d33-947e-fc339c5d567f</string>
+</dict>
+</plist>

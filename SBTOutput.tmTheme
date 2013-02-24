@@ -38,7 +38,7 @@
 			<key>name</key>
 			<string>Error Label</string>
 			<key>scope</key>
-			<string>entity.label.error.sbt-output</string>
+			<string>entity.label.error.sbt-output, entity.label.error.sbt-error</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
@@ -49,7 +49,7 @@
 			<key>name</key>
 			<string>Warning Label</string>
 			<key>scope</key>
-			<string>entity.label.warning.sbt-output</string>
+			<string>entity.label.warning.sbt-output, entity.label.warning.sbt-error</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
