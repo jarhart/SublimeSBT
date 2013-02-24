@@ -12,13 +12,13 @@ class ErrorReport(object):
         self._errors = {}
         self._old_errors = {}
         self._new_errors = {}
-        self._index = None
+        self._set_current(None)
 
     def clear(self):
         self._errors.clear()
         self._old_errors.clear()
         self._new_errors.clear()
-        self._index = None
+        self._set_current(None)
 
     def add_error(self, error):
         if error.filename not in self._new_errors:
@@ -48,10 +48,12 @@ class ErrorReport(object):
         sorted_errors = list(self.all_errors())
         if sorted_errors:
             if self._index is None:
-                self._index = 0
+                self._set_current(0)
             else:
-                self._index = (self._index + 1) % len(sorted_errors)
-            return sorted_errors[self._index]
+                self._set_current((self._index + 1) % len(sorted_errors))
+        else:
+            self._set_current(None)
+        return self.current_error
 
     def sorted_errors_in(self, filename):
 
@@ -70,6 +72,11 @@ class ErrorReport(object):
     def errors_in(self, filename):
         return self._errors.get(filename)
 
+    def current_error_in(self, filename):
+        for error in maybe(self.current_error):
+            if error.filename == filename:
+                return error
+
     def clear_file(self, filename):
         for errors in [self._old_errors, self._new_errors, self._errors]:
             if filename in errors:
@@ -81,3 +88,12 @@ class ErrorReport(object):
     def _merge_errors(self):
         self._errors = dict(list(self._old_errors.items()) + list(self._new_errors.items()))
         self._index = None
+
+    def _set_current(self, i):
+        sorted_errors = list(self.all_errors())
+        if i is not None and i < len(sorted_errors):
+            self._index = i
+            self.current_error = sorted_errors[i]
+        else:
+            self._index = None
+            self.current_error = None

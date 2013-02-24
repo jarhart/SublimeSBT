@@ -10,7 +10,7 @@ class ErrorMarker(object):
 
     def __init__(self, window, error_report, settings):
         self._error_report = error_report
-        self._highlighter = CodeHighlighter(settings)
+        self._highlighter = CodeHighlighter(settings, self._current_error_in_view)
         self._window = window
         settings.add_on_change(self.mark_errors)
 
@@ -64,3 +64,6 @@ class ErrorMarker(object):
     def _line_errors(self, view):
         row, _ = view.rowcol(view.sel()[0].begin())
         return self._error_report.errors_at(view.file_name(), row + 1)
+
+    def _current_error_in_view(self, view):
+        return self._error_report.current_error_in(view.file_name())

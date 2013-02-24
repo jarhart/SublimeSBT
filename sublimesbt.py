@@ -68,6 +68,7 @@ class SbtCommand(sublime_plugin.WindowCommand):
     @delayed(0)
     def show_error(self, error):
         self._error_report.focus_error(error)
+        self._error_reporter.show_errors()
         self._error_view.show_error(error)
         self.goto_error(error)
 
@@ -246,19 +247,19 @@ class SbtListener(sublime_plugin.EventListener):
 
     def on_clone(self, view):
         for reporter in maybe(self._reporter(view)):
-            reporter.show_errors(view.file_name())
+            reporter.show_errors_in(view.file_name())
 
     def on_load(self, view):
         for reporter in maybe(self._reporter(view)):
-            reporter.show_errors(view.file_name())
+            reporter.show_errors_in(view.file_name())
 
     def on_post_save(self, view):
         for reporter in maybe(self._reporter(view)):
-            reporter.hide_errors(view.file_name())
+            reporter.hide_errors_in(view.file_name())
 
     def on_modified(self, view):
         for reporter in maybe(self._reporter(view)):
-            reporter.show_errors(view.file_name())
+            reporter.show_errors_in(view.file_name())
 
     def on_selection_modified(self, view):
         if SbtView.is_sbt_view(view):
@@ -269,7 +270,7 @@ class SbtListener(sublime_plugin.EventListener):
 
     def on_activated(self, view):
         for reporter in maybe(self._reporter(view)):
-            reporter.show_errors(view.file_name())
+            reporter.show_errors_in(view.file_name())
 
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == "in_sbt_view":

@@ -25,10 +25,13 @@ class ErrorReporter(object):
         self._error_report.clear()
         self._marker.clear()
 
-    def show_errors(self, filename):
+    def show_errors(self):
+        self._marker.mark_errors()
+
+    def show_errors_in(self, filename):
         self._marker.mark_errors_in(filename)
 
-    def hide_errors(self, filename):
+    def hide_errors_in(self, filename):
         self._error_report.clear_file(filename)
         self._marker.hide_errors_in(filename)
 
