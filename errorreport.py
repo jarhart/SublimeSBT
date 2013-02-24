@@ -61,7 +61,7 @@ class ErrorReport(object):
                     yield error
 
         for errors in maybe(self.errors_in(filename)):
-            return sort_errors(errors)
+            return list(sort_errors(errors))
 
     def errors_at(self, filename, line):
         for errors in maybe(self.errors_in(filename)):

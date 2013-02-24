@@ -18,19 +18,13 @@ class ErrorMarker(object):
     def mark_errors(self):
         for view in self._window.views():
             errors = self._error_report.sorted_errors_in(view.file_name())
-            if errors:
-                self._highlighter.highlight(view, errors, replace=True)
-            else:
-                self._highlighter.clear(view)
+            self._mark_errors_in_view(view, errors)
 
     @delayed(0)
     def mark_errors_in(self, filename):
-        for errors in maybe(self._error_report.sorted_errors_in(filename)):
-            for view in self._file_views(filename):
-                if view.is_dirty():
-                    self._highlighter.clear(view)
-                else:
-                    self._highlighter.highlight(view, errors, replace=True)
+        errors = self._error_report.sorted_errors_in(filename)
+        for view in self._file_views(filename):
+            self._mark_errors_in_view(view, errors)
 
     @delayed(0)
     def hide_errors_in(self, filename):
@@ -51,6 +45,12 @@ class ErrorMarker(object):
     def update_status(self):
         for view in maybe(self._window.active_view()):
             self._highlighter.set_status_message(view, self._status_message(view))
+
+    def _mark_errors_in_view(self, view, errors):
+        if errors and not view.is_dirty():
+            self._highlighter.highlight(view, errors, replace=True)
+        else:
+            self._highlighter.clear(view)
 
     def _status_message(self, view):
         for errors in maybe(self._line_errors(view)):
