@@ -81,13 +81,15 @@ class ErrorReport(object):
         for errors in [self._old_errors, self._new_errors, self._errors]:
             if filename in errors:
                 del errors[filename]
+        if self.current_error_in(filename):
+            self._set_current(None)
 
     def has_errors(self):
         return len(self._errors) > 0
 
     def _merge_errors(self):
         self._errors = dict(list(self._old_errors.items()) + list(self._new_errors.items()))
-        self._index = None
+        self._set_current(None)
 
     def _set_current(self, i):
         sorted_errors = list(self.all_errors())
