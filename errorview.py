@@ -22,7 +22,7 @@ class ErrorView(OnePerWindow):
         self.settings = SBTSettings(window)
         self.panel = self.window.get_output_panel('sbt_error')
         self.panel.set_read_only(True)
-        self.panel.set_syntax_file("Packages/SublimeSBT/SBTError.tmLanguage")
+        self.panel.set_syntax_file("Packages/SublimeSBT/SBTError.hidden-tmLanguage")
         self._update_panel_colors()
         self.settings.add_on_change(self._update_panel_colors)
 

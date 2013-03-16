@@ -33,7 +33,7 @@ class SbtView(OnePerWindow):
         self.window = window
         self.settings = SBTSettings(window)
         self.panel = self.window.get_output_panel('sbt')
-        self.panel.set_syntax_file("Packages/SublimeSBT/SBTOutput.tmLanguage")
+        self.panel.set_syntax_file("Packages/SublimeSBT/SBTOutput.hidden-tmLanguage")
         for name, setting in SbtView.settings.items():
             self.panel.settings().set(name, setting)
         self._update_panel_colors()

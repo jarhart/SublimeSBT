@@ -35,5 +35,5 @@
 	},
 
 	// The color scheme to use for the output panel.
-	"color_scheme": "Packages/SublimeSBT/SBTOutput.tmTheme"
+	"color_scheme": "Packages/SublimeSBT/SBTOutput.hidden-tmTheme"
 }
