@@ -51,6 +51,8 @@ class SbtRunner(OnePerWindow):
 
     def kill_sbt(self):
         if self.is_sbt_running():
+            # Closing stdin sends an EOF to SBT, telling it to shutdown
+            self._proc.stdin.close()
             self._proc.kill()
 
     def is_sbt_running(self):
