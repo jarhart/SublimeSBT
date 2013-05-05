@@ -148,6 +148,7 @@ Contributors
   - [Jason Arhart](https://github.com/jarhart)
   - [Alexey Alekhin](https://github.com/laughedelic)
   - [Colt Frederickson](https://github.com/coltfred)
+  - [Bryan Head](https://github.com/qiemem)
 
 Contributing
 ------------
