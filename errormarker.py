@@ -41,7 +41,11 @@ class ErrorMarker(object):
         for view in self._window.views():
             self._highlighter.clear(view)
 
+    @delayed(0)
     def update_status(self):
+        self.update_status_now()
+
+    def update_status_now(self):
         for view in maybe(self._window.active_view()):
             self._highlighter.set_status_message(view, self._status_message(view))
 

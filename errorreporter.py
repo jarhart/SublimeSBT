@@ -37,3 +37,6 @@ class ErrorReporter(object):
 
     def update_status(self):
         self._marker.update_status()
+
+    def update_status_now(self):
+        self._marker.update_status_now()
