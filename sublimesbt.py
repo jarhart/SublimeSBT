@@ -266,7 +266,7 @@ class SbtListener(sublime_plugin.EventListener):
             SbtView(view.window()).update_writability()
         else:
             for reporter in maybe(self._reporter(view)):
-                reporter.update_status()
+                reporter.update_status_now()
 
     def on_activated(self, view):
         for reporter in maybe(self._reporter(view)):
