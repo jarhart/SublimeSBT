@@ -9,6 +9,7 @@ except(ValueError):
 
 import os
 import pipes
+import signal
 import subprocess
 import threading
 
@@ -34,67 +35,75 @@ class SbtRunner(OnePerWindow):
 
     def start_sbt(self, command, on_start, on_stop, on_stdout, on_stderr):
         if self.project_root() and not self.is_sbt_running():
-            self._proc = self._try_start_sbt_proc(self.sbt_command(command))
-            if self._proc is not None:
-                on_start()
-                if self._proc.stdout:
-                    self._start_thread(self._monitor_output,
-                                       (self._proc.stdout, on_stdout))
-                if self._proc.stderr:
-                    self._start_thread(self._monitor_output,
-                                       (self._proc.stderr, on_stderr))
-                self._start_thread(self._monitor_proc, (on_stop,))
+            self._proc = self._try_start_sbt_proc(self.sbt_command(command),
+                                                  on_start,
+                                                  on_stop,
+                                                  on_stdout,
+                                                  on_stderr)
 
     def stop_sbt(self):
         if self.is_sbt_running():
-            self._close_sbt()
             self._proc.terminate()
 
     def kill_sbt(self):
         if self.is_sbt_running():
-            self._close_sbt()
             self._proc.kill()
 
-    def _close_sbt(self):
-        # Closing stdin sends an EOF to SBT, telling it to shutdown
-        self._proc.stdin.close()
-
     def is_sbt_running(self):
-        return (self._proc is not None) and (self._proc.returncode is None)
+        return (self._proc is not None) and self._proc.is_running()
 
     def send_to_sbt(self, input):
         if self.is_sbt_running():
-            self._proc.stdin.write(input.encode())
-            self._proc.stdin.flush()
+            self._proc.send(input)
 
-    def _try_start_sbt_proc(self, cmdline):
+    def _try_start_sbt_proc(self, cmdline, *handlers):
         try:
-            return self._start_sbt_proc(cmdline)
+            return SbtProcess.start(cmdline, self.project_root(), *handlers)
         except OSError:
             msg = ('Unable to find "%s".\n\n'
                    'You may need to specify the full path to your sbt command.'
                    % cmdline[0])
             sublime.error_message(msg)
 
-    def _start_sbt_proc(self, cmdline):
-        return self._popen(cmdline,
-                           stdin=subprocess.PIPE,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE,
-                           cwd=self.project_root())
 
-    def _popen(self, cmdline, **kwargs):
+class SbtProcess(object):
+
+    @staticmethod
+    def start(cmdline, cwd, *handlers):
         if sublime.platform() == 'windows':
-            return self._popen_windows(cmdline, **kwargs)
+            return SbtWindowsProcess._start(cmdline, cwd, *handlers)
         else:
-            return self._popen_unix(cmdline, **kwargs)
+            return SbtUnixProcess._start(cmdline, cwd, *handlers)
 
-    def _popen_unix(self, cmdline, **kwargs):
-        cmd = ' '.join(map(pipes.quote, cmdline))
-        return subprocess.Popen(['/bin/bash', '-lc', cmd], **kwargs)
+    @classmethod
+    def _start(cls, cmdline, cwd, *handlers):
+        return cls(cls._start_proc(cmdline, cwd), *handlers)
 
-    def _popen_windows(self, cmdline, **kwargs):
-        return subprocess.Popen(cmdline, shell=True, **kwargs)
+    @classmethod
+    def _start_proc(cls, cmdline, cwd):
+        return cls._popen(cmdline,
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE,
+                          cwd=cwd)
+
+    def __init__(self, proc, on_start, on_stop, on_stdout, on_stderr):
+        self._proc = proc
+        on_start()
+        if self._proc.stdout:
+            self._start_thread(self._monitor_output,
+                               (self._proc.stdout, on_stdout))
+        if self._proc.stderr:
+            self._start_thread(self._monitor_output,
+                               (self._proc.stderr, on_stderr))
+        self._start_thread(self._monitor_proc, (on_stop,))
+
+    def is_running(self):
+        return self._proc.returncode is None
+
+    def send(self, input):
+        self._proc.stdin.write(input.encode())
+        self._proc.stdin.flush()
 
     def _monitor_output(self, pipe, handle_output):
         while True:
@@ -111,3 +120,34 @@ class SbtRunner(OnePerWindow):
 
     def _start_thread(self, target, args):
         threading.Thread(target=target, args=args).start()
+
+
+class SbtUnixProcess(SbtProcess):
+
+    @classmethod
+    def _popen(cls, cmdline, **kwargs):
+        cmd = ' '.join(map(pipes.quote, cmdline))
+        return subprocess.Popen(['/bin/bash', '-lc', cmd], preexec_fn=os.setpgrp, **kwargs)
+
+    def terminate(self):
+        os.killpg(self._proc.pid, signal.SIGTERM)
+
+    def kill(self):
+        os.killpg(self._proc.pid, signal.SIGKILL)
+
+
+class SbtWindowsProcess(SbtProcess):
+
+    @classmethod
+    def _popen(cls, cmdline, **kwargs):
+        return subprocess.Popen(cmdline, shell=True, **kwargs)
+
+    def terminate(self):
+        self.kill()
+
+    def kill(self):
+        cmdline = ['taskkill', '/T', '/F', '/PID', str(self._proc.pid)]
+        si = subprocess.STARTUPINFO()
+        si.dwFlags = subprocess.STARTF_USESHOWWINDOW
+        si.wShowWindow = subprocess.SW_HIDE
+        subprocess.call(cmdline, startupinfo=si)
