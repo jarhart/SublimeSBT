@@ -9,9 +9,10 @@ except(ValueError):
 class ErrorMarker(object):
 
     def __init__(self, window, error_report, settings):
-        self._error_report = error_report
-        self._highlighter = CodeHighlighter(settings, self._current_error_in_view)
         self._window = window
+        self._error_report = error_report
+        self.__settings = settings
+        self.__highlighter = None
         settings.add_on_change(self.mark_errors)
 
     @delayed(0)
@@ -70,3 +71,9 @@ class ErrorMarker(object):
 
     def _current_error_in_view(self, view):
         return self._error_report.current_error_in(view.file_name())
+
+    @property
+    def _highlighter(self):
+        if self.__highlighter is None:
+            self.__highlighter = CodeHighlighter(self.__settings, self._current_error_in_view)
+        return self.__highlighter
