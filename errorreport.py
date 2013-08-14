@@ -42,7 +42,7 @@ class ErrorReport(object):
     def focus_error(self, error):
         for i, e in enumerate(self.all_errors()):
             if e == error:
-                self._index = i
+                self._set_current(i)
 
     def next_error(self):
         sorted_errors = list(self.all_errors())
