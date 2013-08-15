@@ -151,7 +151,15 @@ class SbtWindowsProcess(SbtProcess):
 
     @classmethod
     def _sbt_env(cls):
-        return dict(list(os.environ.items()) + [['SBT_OPTS', cls.SBT_OPTS]])
+        return dict(list(os.environ.items()) + [['SBT_OPTS', cls._sbt_opts()]])
+
+    @classmethod
+    def _sbt_opts(cls):
+        existing_opts = os.environ.get('SBT_OPTS', None)
+        if existing_opts is None:
+            return cls.SBT_OPTS
+        else:
+            return existing_opts + ' ' + cls.SBT_OPTS
 
     def terminate(self):
         self.kill()
