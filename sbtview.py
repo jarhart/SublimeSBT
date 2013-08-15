@@ -74,7 +74,10 @@ class SbtView(OnePerWindow):
     def take_input(self):
         input_region = sublime.Region(self._output_size, self.panel.size())
         input = self.panel.substr(input_region)
-        self._erase_output(input_region)
+        if sublime.platform() == 'windows':
+            self._append_output('\n')
+        else:
+            self._erase_output(input_region)
         return input
 
     def delete_left(self):
@@ -124,10 +127,10 @@ class SbtView(OnePerWindow):
         return self._strip_codes(self._normalize_lines(output))
 
     def _normalize_lines(self, output):
-        return output.replace('\r\n', '\n').replace('\033M\033[2K', '\r')
+        return output.replace('\r\n', '\n').replace('\033M', '\r')
 
     def _strip_codes(self, output):
-        return re.sub('\\033\[[0-9;]+m', '', output)
+        return re.sub(r'\033\[[0-9;]+[mK]', '', output)
 
     def _update_panel_colors(self):
         self.panel.settings().set('color_scheme', self.settings.get('color_scheme'))

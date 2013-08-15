@@ -127,7 +127,9 @@ class SbtUnixProcess(SbtProcess):
     @classmethod
     def _popen(cls, cmdline, **kwargs):
         cmd = ' '.join(map(pipes.quote, cmdline))
-        return subprocess.Popen(['/bin/bash', '-lc', cmd], preexec_fn=os.setpgrp, **kwargs)
+        return subprocess.Popen(['/bin/bash', '-lc', cmd],
+                                preexec_fn=os.setpgrp,
+                                **kwargs)
 
     def terminate(self):
         os.killpg(self._proc.pid, signal.SIGTERM)
@@ -138,9 +140,18 @@ class SbtUnixProcess(SbtProcess):
 
 class SbtWindowsProcess(SbtProcess):
 
+    SBT_OPTS = '-Djline.terminal=jline.UnsupportedTerminal'
+
     @classmethod
     def _popen(cls, cmdline, **kwargs):
-        return subprocess.Popen(cmdline, shell=True, **kwargs)
+        return subprocess.Popen(cmdline,
+                                shell=True,
+                                env=cls._sbt_env(),
+                                **kwargs)
+
+    @classmethod
+    def _sbt_env(cls):
+        return dict(list(os.environ.items()) + [['SBT_OPTS', cls.SBT_OPTS]])
 
     def terminate(self):
         self.kill()

@@ -34,7 +34,7 @@ class BuildOutputMonitor(object):
                 return parser
 
     def _strip_terminal_codes(self, line):
-        return re.sub(r'\033\[[0-9;]+m', '', line)
+        return re.sub(r'\033(?:M|\[[0-9;]+[mK])', '', line)
 
 
 class OutputParser(object):
