@@ -68,6 +68,10 @@ class SbtRunner(OnePerWindow):
 
 class SbtProcess(object):
 
+    sbt_opts = [
+        '-Dfile.encoding=UTF-8'
+    ]
+
     @staticmethod
     def start(cmdline, cwd, *handlers):
         if sublime.platform() == 'windows':
@@ -82,10 +86,23 @@ class SbtProcess(object):
     @classmethod
     def _start_proc(cls, cmdline, cwd):
         return cls._popen(cmdline,
+                          env=cls._sbt_env(),
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
                           cwd=cwd)
+
+    @classmethod
+    def _sbt_env(cls):
+        return dict(list(os.environ.items()) +
+                    [cls._append_opts('SBT_OPTS', cls.sbt_opts)])
+
+    @classmethod
+    def _append_opts(cls, name, opts):
+        existing_opts = os.environ.get(name, None)
+        if existing_opts:
+            opts = [existing_opts] + opts
+        return [name, ' '.join(opts)]
 
     def __init__(self, proc, on_start, on_stop, on_stdout, on_stderr):
         self._proc = proc
@@ -146,26 +163,13 @@ class SbtUnixProcess(SbtProcess):
 
 class SbtWindowsProcess(SbtProcess):
 
-    SBT_OPTS = '-Djline.terminal=jline.UnsupportedTerminal'
+    sbt_opts = SbtProcess.sbt_opts + [
+        '-Djline.terminal=jline.UnsupportedTerminal'
+    ]
 
     @classmethod
     def _popen(cls, cmdline, **kwargs):
-        return subprocess.Popen(cmdline,
-                                shell=True,
-                                env=cls._sbt_env(),
-                                **kwargs)
-
-    @classmethod
-    def _sbt_env(cls):
-        return dict(list(os.environ.items()) + [['SBT_OPTS', cls._sbt_opts()]])
-
-    @classmethod
-    def _sbt_opts(cls):
-        existing_opts = os.environ.get('SBT_OPTS', None)
-        if existing_opts is None:
-            return cls.SBT_OPTS
-        else:
-            return existing_opts + ' ' + cls.SBT_OPTS
+        return subprocess.Popen(cmdline, shell=True, **kwargs)
 
     def terminate(self):
         self.kill()
