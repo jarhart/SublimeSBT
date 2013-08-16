@@ -126,10 +126,16 @@ class SbtUnixProcess(SbtProcess):
 
     @classmethod
     def _popen(cls, cmdline, **kwargs):
-        cmd = ' '.join(map(pipes.quote, cmdline))
-        return subprocess.Popen(['/bin/bash', '-lc', cmd],
+        return subprocess.Popen(cls._shell_cmdline(cmdline),
                                 preexec_fn=os.setpgrp,
                                 **kwargs)
+
+    @classmethod
+    def _shell_cmdline(cls, cmdline):
+        shell = os.environ.get('SHELL', '/bin/bash')
+        opts = '-ic' if shell.endswith('csh') else '-lic'
+        cmd = ' '.join(map(pipes.quote, cmdline))
+        return [shell, opts, cmd]
 
     def terminate(self):
         os.killpg(self._proc.pid, signal.SIGTERM)
