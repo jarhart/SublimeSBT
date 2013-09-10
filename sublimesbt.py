@@ -16,10 +16,10 @@ except(ValueError):
     from outputmon import BuildOutputMonitor
     from util import delayed, maybe
 
-class SbtCommand(sublime_plugin.WindowCommand):
+class SbtWindowCommand(sublime_plugin.WindowCommand):
 
     def __init__(self, *args):
-        super(SbtCommand, self).__init__(*args)
+        super(SbtWindowCommand, self).__init__(*args)
         self._project = Project(self.window)
         self._runner = SbtRunner(self.window)
         self._sbt_view = SbtView(self.window)
@@ -94,7 +94,7 @@ class SbtCommand(sublime_plugin.WindowCommand):
         self._sbt_view.show_output(output)
 
 
-class StartSbtCommand(SbtCommand):
+class StartSbtCommand(SbtWindowCommand):
 
     def run(self):
         self.start_sbt()
@@ -103,7 +103,7 @@ class StartSbtCommand(SbtCommand):
         return self.is_sbt_project() and not self.is_sbt_running()
 
 
-class StopSbtCommand(SbtCommand):
+class StopSbtCommand(SbtWindowCommand):
 
     def run(self):
         self.stop_sbt()
@@ -112,7 +112,7 @@ class StopSbtCommand(SbtCommand):
         return self.is_sbt_running()
 
 
-class KillSbtCommand(SbtCommand):
+class KillSbtCommand(SbtWindowCommand):
 
     def run(self):
         self.kill_sbt()
@@ -121,7 +121,7 @@ class KillSbtCommand(SbtCommand):
         return self.is_sbt_running()
 
 
-class ShowSbtCommand(SbtCommand):
+class ShowSbtCommand(SbtWindowCommand):
 
     def run(self):
         self.show_sbt()
@@ -131,7 +131,7 @@ class ShowSbtCommand(SbtCommand):
         return self.is_sbt_project()
 
 
-class SbtSubmitCommand(SbtCommand):
+class SbtSubmitCommand(SbtWindowCommand):
 
     def run(self):
         self.send_to_sbt(self.take_input() + '\n')
@@ -140,7 +140,7 @@ class SbtSubmitCommand(SbtCommand):
         return self.is_sbt_running()
 
 
-class SbtCommandCommand(SbtCommand):
+class SbtCommand(SbtWindowCommand):
 
     def run(self, command):
         if self.is_sbt_running():
@@ -152,25 +152,61 @@ class SbtCommandCommand(SbtCommand):
         return self.is_sbt_project()
 
 
-class SbtTestCommand(SbtCommandCommand):
+class SbtTestCommand(SbtCommand):
 
     def run(self):
-        SbtCommandCommand.run(self, self.setting('test_command'))
+        super(SbtTestCommand, self).run(self.test_command())
+
+    def test_command(self):
+        return self.setting('test_command')
 
 
-class SbtContinuousTestCommand(SbtCommandCommand):
+class SbtContinuousTestCommand(SbtTestCommand):
+
+    def test_command(self):
+        return '~ ' + super(SbtContinuousTestCommand, self).test_command()
+
+
+test_only_arg = '*'
+
+
+class SbtTestOnlyCommand(SbtCommand):
 
     def run(self):
-        SbtCommandCommand.run(self, '~ ' + self.setting('test_command'))
+        self.window.show_input_panel('SBT: test-only', test_only_arg,
+                                     self.test_only, None, None)
+
+    def test_only(self, arg):
+        global test_only_arg
+        test_only_arg = arg
+        super(SbtTestOnlyCommand, self).run(self.test_command(arg))
+
+    def test_command(self, arg):
+        return 'test-only %s' % arg
 
 
-class SbtRunCommand(SbtCommandCommand):
+class SbtContinuousTestOnlyCommand(SbtTestOnlyCommand):
+
+    def test_command(self, arg):
+        return '~ ' + super(SbtContinuousTestOnlyCommand, self).test_command(arg)
+
+
+class SbtRunCommand(SbtCommand):
 
     def run(self):
-        SbtCommandCommand.run(self, self.setting('run_command'))
+        super(SbtRunCommand, self).run(self.setting('run_command'))
 
 
-class SbtErrorsCommand(SbtCommand):
+class SbtReloadCommand(SbtCommand):
+
+    def run(self):
+        super(SbtReloadCommand, self).run('reload')
+
+    def is_enabled(self):
+        return self.is_sbt_running()
+
+
+class SbtErrorsCommand(SbtWindowCommand):
 
     def is_enabled(self):
         return self.is_sbt_project() and self._error_report.has_errors()
@@ -207,7 +243,7 @@ class ShowSbtErrorOutputCommand(SbtErrorsCommand):
         self.show_error_output()
 
 
-class SbtEotCommand(SbtCommand):
+class SbtEotCommand(SbtWindowCommand):
 
     def run(self):
         if sublime.platform() == 'windows':
@@ -219,25 +255,25 @@ class SbtEotCommand(SbtCommand):
         return self.is_sbt_running()
 
 
-class SbtDeleteLeftCommand(SbtCommand):
+class SbtDeleteLeftCommand(SbtWindowCommand):
 
     def run(self):
         self._sbt_view.delete_left()
 
 
-class SbtDeleteBolCommand(SbtCommand):
+class SbtDeleteBolCommand(SbtWindowCommand):
 
     def run(self):
         self._sbt_view.delete_bol()
 
 
-class SbtDeleteWordLeftCommand(SbtCommand):
+class SbtDeleteWordLeftCommand(SbtWindowCommand):
 
     def run(self):
         self._sbt_view.delete_word_left()
 
 
-class SbtDeleteWordRightCommand(SbtCommand):
+class SbtDeleteWordRightCommand(SbtWindowCommand):
 
     def run(self):
         self._sbt_view.delete_word_right()

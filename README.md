@@ -1,6 +1,6 @@
 SublimeSBT
 ==========
-[SBT](http://www.scala-sbt.org/) build tool integration for
+Scala [SBT](http://www.scala-sbt.org/) build tool integration for
 [Sublime Text 2](http://sublimetext.com/2) and
 [Sublime Text 3](http://sublimetext.com/3).
 
@@ -49,16 +49,32 @@ palette if SublimeSBT detects that your project is an SBT project.
   - Show the SBT output panel if it's not already showing. This also focuses
     the output panel and puts the cursor at the end.
 
-**Compile, Test, Run, Start Console**
+**Compile, Test, Run, Package, Start Console**
 
-  - Run the `compile`, `test`, `run`, or `console` SBT command. If SBT is
-    currently running the command is run in interactive mode, otherwise it's
-    run in batch mode.
+  - Run the `compile`, `test`, `run`, `package`, or `console` SBT command. If
+    SBT is currently running the command is run in interactive mode, otherwise
+    it's run in batch mode.
 
 **Start Continuous Compiling, Start Continuous Testing**
 
   - Run `~ compile` or `~ test`. If SBT is currently running the command is run
     in interactive mode, otherwise it's run in batch mode.
+
+**Test-Only**
+
+  - Run the `test-only` command, prompting for an argument. If SBT is
+    currently running the command is run in interactive mode, otherwise it's
+    run in batch mode.
+
+**Start Continuous Test-Only**
+
+  - Run the `~ test-only`, prompting for an argument. If SBT is currently
+    running the command is run in interactive mode, otherwise it's run in batch
+    mode.
+
+**Reload**
+
+  - Run the `reload` command if SBT is currently running.
 
 **Show Error List**
 
@@ -158,3 +174,8 @@ Contributing
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+Copyright
+---------
+
+Copyright (c) 2012 Jason Arhart. See LICENSE for further details.
