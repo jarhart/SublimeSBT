@@ -58,7 +58,10 @@ class SbtRunner(OnePerWindow):
 
     def _try_start_sbt_proc(self, cmdline, *handlers):
         try:
-            return SbtProcess.start(cmdline, self.project_root(), *handlers)
+            return SbtProcess.start(cmdline,
+                                    self.project_root(),
+                                    self._project.settings,
+                                    *handlers)
         except OSError:
             msg = ('Unable to find "%s".\n\n'
                    'You may need to specify the full path to your sbt command.'
@@ -68,34 +71,36 @@ class SbtRunner(OnePerWindow):
 
 class SbtProcess(object):
 
-    sbt_opts = [
-        '-Dfile.encoding=UTF-8'
-    ]
-
     @staticmethod
-    def start(cmdline, cwd, *handlers):
+    def start(*args, **kwargs):
         if sublime.platform() == 'windows':
-            return SbtWindowsProcess._start(cmdline, cwd, *handlers)
+            return SbtWindowsProcess._start(*args, **kwargs)
         else:
-            return SbtUnixProcess._start(cmdline, cwd, *handlers)
+            return SbtUnixProcess._start(*args, **kwargs)
 
     @classmethod
-    def _start(cls, cmdline, cwd, *handlers):
-        return cls(cls._start_proc(cmdline, cwd), *handlers)
+    def _start(cls, cmdline, cwd, settings, *handlers):
+        return cls(cls._start_proc(cmdline, cwd, settings), settings, *handlers)
 
     @classmethod
-    def _start_proc(cls, cmdline, cwd):
+    def _start_proc(cls, cmdline, cwd, settings):
         return cls._popen(cmdline,
-                          env=cls._sbt_env(),
+                          env=cls._sbt_env(settings),
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
                           cwd=cwd)
 
     @classmethod
-    def _sbt_env(cls):
+    def _sbt_env(cls, settings):
         return dict(list(os.environ.items()) +
-                    [cls._append_opts('SBT_OPTS', cls.sbt_opts)])
+                    [cls._append_opts('SBT_OPTS', cls._sbt_opts(settings))])
+
+    @classmethod
+    def _sbt_opts(cls, settings):
+        return [
+            '-Dfile.encoding=%s' % (settings.get('encoding') or 'UTF-8')
+        ]
 
     @classmethod
     def _append_opts(cls, name, opts):
@@ -104,8 +109,9 @@ class SbtProcess(object):
             opts = [existing_opts] + opts
         return [name, ' '.join(opts)]
 
-    def __init__(self, proc, on_start, on_stop, on_stdout, on_stderr):
+    def __init__(self, proc, settings, on_start, on_stop, on_stdout, on_stderr):
         self._proc = proc
+        self._encoding = settings.get('encoding') or 'UTF-8'
         on_start()
         if self._proc.stdout:
             self._start_thread(self._monitor_output,
@@ -124,7 +130,7 @@ class SbtProcess(object):
 
     def _monitor_output(self, pipe, handle_output):
         while True:
-            output = os.read(pipe.fileno(), 2 ** 15).decode()
+            output = os.read(pipe.fileno(), 2 ** 15).decode(self._encoding)
             if output != "":
                 handle_output(output)
             else:
@@ -163,13 +169,15 @@ class SbtUnixProcess(SbtProcess):
 
 class SbtWindowsProcess(SbtProcess):
 
-    sbt_opts = SbtProcess.sbt_opts + [
-        '-Djline.terminal=jline.UnsupportedTerminal'
-    ]
-
     @classmethod
     def _popen(cls, cmdline, **kwargs):
         return subprocess.Popen(cmdline, shell=True, **kwargs)
+
+    @classmethod
+    def _sbt_opts(cls, settings):
+        return SbtProcess._sbt_opts(settings) + [
+            '-Dfile.encoding=%s' % (settings.get('encoding') or 'UTF-8')
+        ]
 
     def terminate(self):
         self.kill()
