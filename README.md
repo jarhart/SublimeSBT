@@ -165,6 +165,7 @@ Contributors
   - [Alexey Alekhin](https://github.com/laughedelic)
   - [Colt Frederickson](https://github.com/coltfred)
   - [Bryan Head](https://github.com/qiemem)
+  - [Tony Sloane](https://github.com/inkytonik)
 
 Contributing
 ------------
