@@ -206,6 +206,10 @@ class SbtTestQuickCommand(SbtCommand):
 	def test_command(self, arg):
 		return 'test-quick %s' % arg
 		
+class SbtContinuousTestQuickCommand(SbtTestQuickCommand):
+
+	def test_command(self, arg):
+		return '~ ' + super(SbtContinuousTestQuickCommand, self).test_command(arg)
 
 class SbtRunCommand(SbtCommand):
 
