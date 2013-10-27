@@ -172,8 +172,10 @@ test_only_arg = '*'
 
 class SbtTestOnlyCommand(SbtCommand):
 
+    base_command = 'test-only'
+
     def run(self):
-        self.window.show_input_panel('SBT: test-only', test_only_arg,
+        self.window.show_input_panel(self.prompt(), test_only_arg,
                                      self.test_only, None, None)
 
     def test_only(self, arg):
@@ -181,8 +183,11 @@ class SbtTestOnlyCommand(SbtCommand):
         test_only_arg = arg
         super(SbtTestOnlyCommand, self).run(self.test_command(arg))
 
+    def prompt(self):
+        return 'SBT: %s' % self.base_command
+
     def test_command(self, arg):
-        return 'test-only %s' % arg
+        return '%s %s' % (self.base_command, arg)
 
 
 class SbtContinuousTestOnlyCommand(SbtTestOnlyCommand):
@@ -190,26 +195,17 @@ class SbtContinuousTestOnlyCommand(SbtTestOnlyCommand):
     def test_command(self, arg):
         return '~ ' + super(SbtContinuousTestOnlyCommand, self).test_command(arg)
 
-test_quick_arg = '*'
 
-class SbtTestQuickCommand(SbtCommand):
+class SbtTestQuickCommand(SbtTestOnlyCommand):
 
-	def run(self):
-		self.window.show_input_panel('SBT: test-quick', test_quick_arg,
-									 self.test_quick, None, None)
+    base_command = 'test-quick'
 
-	def test_quick(self, arg):
-		global test_quick_arg
-		test_quick_arg = arg
-		super(SbtTestQuickCommand, self).run(self.test_command(arg))
 
-	def test_command(self, arg):
-		return 'test-quick %s' % arg
-		
 class SbtContinuousTestQuickCommand(SbtTestQuickCommand):
 
-	def test_command(self, arg):
-		return '~ ' + super(SbtContinuousTestQuickCommand, self).test_command(arg)
+    def test_command(self, arg):
+        return '~ ' + super(SbtContinuousTestQuickCommand, self).test_command(arg)
+
 
 class SbtRunCommand(SbtCommand):
 
