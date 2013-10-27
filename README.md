@@ -60,17 +60,17 @@ palette if SublimeSBT detects that your project is an SBT project.
   - Run `~ compile` or `~ test`. If SBT is currently running the command is run
     in interactive mode, otherwise it's run in batch mode.
 
-**Test-Only**
+**Test-Only, Test-Quick**
 
-  - Run the `test-only` command, prompting for an argument. If SBT is
+  - Run the `test-only` or `test-quick` command, prompting for an argument. If
+    SBT is currently running the command is run in interactive mode, otherwise
+    it's run in batch mode.
+
+**Start Continuous Test-Only, Start Continuous Test-Quick**
+
+  - Run `~ test-only` or `~ test-quick`, prompting for an argument. If SBT is
     currently running the command is run in interactive mode, otherwise it's
     run in batch mode.
-
-**Start Continuous Test-Only**
-
-  - Run the `~ test-only`, prompting for an argument. If SBT is currently
-    running the command is run in interactive mode, otherwise it's run in batch
-    mode.
 
 **Reload**
 
@@ -166,6 +166,7 @@ Contributors
   - [Colt Frederickson](https://github.com/coltfred)
   - [Bryan Head](https://github.com/qiemem)
   - [Tony Sloane](https://github.com/inkytonik)
+  - [Tim Gautier](https://github.com/timgautier)
 
 Contributing
 ------------
