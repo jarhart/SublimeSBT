@@ -99,7 +99,7 @@ class SbtProcess(object):
     @classmethod
     def _sbt_opts(cls, settings):
         return [
-            '-Dfile.encoding=%s' % (settings.get('encoding') or 'UTF-8')
+            str('-Dfile.encoding=%s' % (settings.get('encoding') or 'UTF-8'))
         ]
 
     @classmethod
@@ -172,12 +172,6 @@ class SbtWindowsProcess(SbtProcess):
     @classmethod
     def _popen(cls, cmdline, **kwargs):
         return subprocess.Popen(cmdline, shell=True, **kwargs)
-
-    @classmethod
-    def _sbt_opts(cls, settings):
-        return SbtProcess._sbt_opts(settings) + [
-            '-Dfile.encoding=%s' % (settings.get('encoding') or 'UTF-8')
-        ]
 
     def terminate(self):
         self.kill()
