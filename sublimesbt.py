@@ -1,6 +1,8 @@
 import sublime_plugin
 import sublime
 
+import re
+
 try:
     from .project import Project
     from .sbtrunner import SbtRunner
@@ -91,7 +93,16 @@ class SbtWindowCommand(sublime_plugin.WindowCommand):
 
     @delayed(0)
     def _show_output(self, output):
+        output = self._work_around_JLine_bug(output)
         self._sbt_view.show_output(output)
+
+    # If we have a single character, space, CR then we are probably seeing a
+    # JLine bug which has inserted the space, CR at column 80 of a prompt
+    # line. Delete the space and CR so that it doesn't mess up the display
+    # of the prompt line (ie. hide the stuff before the CR). Just remove
+    # the space, CR pair.
+    def _work_around_JLine_bug(self, output):
+        return re.sub(r'^(.) \r$', r'\1', output)
 
 
 class StartSbtCommand(SbtWindowCommand):
