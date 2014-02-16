@@ -73,7 +73,6 @@ class SbtRunner(OnePerWindow):
     def add_to_history(self, input):
         if input != '' and not input.isspace ():
             input = input.rstrip('\n\r')
-            print ('adding to history: "' + input + '"')
             self._history = [cmd for cmd in self._history if cmd != input]
             self._history.insert (0, input)
             history_length = self._project.settings.get('history_length') or 20
