@@ -295,6 +295,37 @@ class SbtDeleteWordRightCommand(SbtWindowCommand):
         self._sbt_view.delete_word_right()
 
 
+class SbtShowHistoryCommand(SbtWindowCommand):
+
+    def run(self, editable=False):
+        def get_command(index):
+            if index >= 0:
+                cmd = self._runner.get_history()[index]
+                if editable:
+                    self.window.show_input_panel("Command:", cmd,
+                                                 self.run_command,
+                                                 None, None)
+                else:
+                    self.run_command(cmd)
+        history = self._runner.get_history()
+        if history == []:
+            sublime.error_message('There is no SBT command history to display.')
+        else:
+            self.window.show_quick_panel(history, get_command)
+
+    def run_command(self, cmd):
+        self.send_to_sbt (cmd + '\n')
+
+    def is_enabled(self):
+        return self.is_sbt_running()
+
+
+class SbtClearHistoryCommand(SbtWindowCommand):
+
+    def run(self):
+        self._runner.clear_history()
+
+
 class SbtListener(sublime_plugin.EventListener):
 
     def on_clone(self, view):

@@ -38,5 +38,8 @@
 	},
 
 	// The color scheme to use for the output panel.
-	"color_scheme": "Packages/SublimeSBT/SBTOutput.hidden-tmTheme"
+	"color_scheme": "Packages/SublimeSBT/SBTOutput.hidden-tmTheme",
+
+	// The maximum number of unique entries to keep in the command history
+	"history_length": 20
 }

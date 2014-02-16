@@ -18,5 +18,8 @@
 	{ "caption": "SBT: Show Error List", "command": "list_sbt_errors" },
 	{ "caption": "SBT: Show Next Error", "command": "next_sbt_error" },
 	{ "caption": "SBT: Clear Errors", "command": "clear_sbt_errors" },
-	{ "caption": "SBT: Show Error Output", "command": "show_sbt_error_output" }
+	{ "caption": "SBT: Show Error Output", "command": "show_sbt_error_output" },
+	{ "caption": "SBT: Show History", "command": "sbt_show_history" },
+	{ "caption": "SBT: Show History and Edit", "command": "sbt_show_history", "args": {"editable": true} },
+	{ "caption": "SBT: Clear History", "command": "sbt_clear_history" }
 ]

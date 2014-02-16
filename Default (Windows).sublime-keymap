@@ -5,6 +5,9 @@
 	{ "keys": ["ctrl+alt+n"], "command": "next_sbt_error" },
 	{ "keys": ["ctrl+alt+o"], "command": "show_sbt_error_output" },
 
+	{ "keys": ["ctrl+alt+h"], "command": "sbt_show_history" },
+	{ "keys": ["ctrl+alt+shift+h"], "command": "sbt_show_history", "args": {"editable": true} },
+
 	{ "keys": ["enter"], "command": "sbt_submit", "context": [{ "key": "in_sbt_view" }] },
 	{ "keys": ["ctrl+d"], "command": "sbt_eot", "context": [{ "key": "in_sbt_view" }] },
 
