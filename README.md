@@ -96,6 +96,20 @@ palette if SublimeSBT detects that your project is an SBT project.
   - Clear any compile errors or test failures and remove any highlighting
     thereof.
 
+**Show History**
+
+  - Show a quick panel with the history of submitted commands. Selecting a
+    command submits it again.
+
+**Show History and Edit**
+
+   - As for Show History but also provides an opportunity to edit the selected
+     command before it is re-submitted.
+
+**Clear History**
+
+  - Clear the command history.
+
 Configuring
 -----------
 The default settings can be viewed by accessing the ***Preferences >
@@ -158,6 +172,11 @@ Project*** menu entry and putting settings in a "SublimeSBT" object inside of
             }
         }
     }
+
+**history_length**
+
+  - The maximum number of unique commands to keep in the command history.
+    The default setting is 20.
 
 Contributors
 ------------

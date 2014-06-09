@@ -23,6 +23,7 @@ class SbtRunner(OnePerWindow):
     def __init__(self, window):
         self._project = Project(window)
         self._proc = None
+        self._history = []
 
     def project_root(self):
         return self._project.project_root()
@@ -54,6 +55,7 @@ class SbtRunner(OnePerWindow):
 
     def send_to_sbt(self, input):
         if self.is_sbt_running():
+            self.add_to_history(input)
             self._proc.send(input)
 
     def _try_start_sbt_proc(self, cmdline, *handlers):
@@ -67,6 +69,20 @@ class SbtRunner(OnePerWindow):
                    'You may need to specify the full path to your sbt command.'
                    % cmdline[0])
             sublime.error_message(msg)
+
+    def add_to_history(self, input):
+        if input != '' and not input.isspace ():
+            input = input.rstrip('\n\r')
+            self._history = [cmd for cmd in self._history if cmd != input]
+            self._history.insert (0, input)
+            history_length = self._project.settings.get('history_length') or 20
+            del self._history[history_length:]
+
+    def clear_history(self):
+        self._history.clear ()
+
+    def get_history(self):
+        return self._history
 
 
 class SbtProcess(object):
