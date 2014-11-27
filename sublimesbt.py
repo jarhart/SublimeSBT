@@ -65,6 +65,7 @@ class SbtWindowCommand(sublime_plugin.WindowCommand):
         return self._sbt_view.take_input()
 
     def send_to_sbt(self, cmd):
+        self.window.run_command('clear_sbt_errors')
         self._runner.send_to_sbt(cmd)
 
     @delayed(0)
@@ -243,6 +244,7 @@ class ClearSbtErrorsCommand(SbtErrorsCommand):
 
     def run(self):
         self._error_reporter.clear()
+        self._error_view.clear()
 
 
 class ListSbtErrorsCommand(SbtErrorsCommand):
