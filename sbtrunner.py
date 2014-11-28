@@ -23,7 +23,7 @@ class SbtRunner(OnePerWindow):
     def __init__(self, window):
         self._project = Project(window)
         self._proc = None
-        self._history = []
+        self.init_history()
 
     def project_root(self):
         return self._project.project_root()
@@ -69,6 +69,17 @@ class SbtRunner(OnePerWindow):
                    'You may need to specify the full path to your sbt command.'
                    % cmdline[0])
             sublime.error_message(msg)
+
+    def init_history(self):
+        self._history = []
+        if self.project_root():
+            path = os.path.join(self.project_root(), '.SublimeSBT_history')
+            if os.path.exists(path):
+                for line in open(path):
+                    self._history.append(line.rstrip('\n\r'))
+            global_cmds = self._project.settings.get('history') or []
+            for cmd in global_cmds:
+                self._history.append(cmd)
 
     def add_to_history(self, input):
         if input != '' and not input.isspace ():
