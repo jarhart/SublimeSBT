@@ -12,7 +12,8 @@ class BuildOutputMonitor(object):
 
     def __init__(self, project):
         self.project = project
-        self._parsers = [ErrorParser, TestFailureParser, FinishedParser]
+        self._parsers = [ErrorParser, TestFailureParser, MultilineTestFailureParser,
+                         FinishedParser]
         self._parser = None
         self._buffer = ''
 
@@ -107,6 +108,9 @@ class ErrorParser(AbstractErrorParser):
 
 class TestFailureParser(AbstractErrorParser):
 
+    # Single line failures of the form:
+    # [error|info] ... (filename::nn)
+
     @classmethod
     def start(cls, project, line):
         for m in maybe(re.match(r'\[(?:error|info)\]\s+(.+)\s+\(([^:]+):(\d+)\)$', line)):
@@ -119,6 +123,44 @@ class TestFailureParser(AbstractErrorParser):
     def __init__(self, project, line, filename, lineno, message):
         AbstractErrorParser.__init__(self, project, line, filename, lineno, message)
         self.error_type = 'failure'
+
+
+class MultilineTestFailureParser(AbstractErrorParser):
+
+    # Multi-line failures of the form:
+    # [info] - test description here *** FAILED ***
+    # [info] ...
+    # [info] ... (filename:nn)
+
+    @classmethod
+    def start(cls, project, line):
+        for m in maybe(re.match(r'\[info\] - (.+) \*\*\* FAILED \*\*\*$', line)):
+            yield cls(project,
+                      line=line,
+                      message=m.group(1))
+
+    def __init__(self, project, line, message):
+        AbstractErrorParser.__init__(self, project, line, "dummy", 0, message)
+        self.error_type = 'error'
+
+    def parse(self, line):
+        for (t, filename, lineno) in maybe(self._match_last_line(line)):
+            self._extra_line(t)
+            self.filename = filename
+            self.lineno = lineno
+            return self.finish()
+        for t in maybe(self._match_line(line)):
+            self._extra_line(t)
+            return self
+        return self.finish()
+
+    def _match_last_line(self, line):
+        for m in maybe(re.match(r'\[info\] (.+) \(([^:]+):(\d+)\)$', line)):
+            return (m.group(1), m.group(2), int(m.group(3)))
+
+    def _match_line(self, line):
+        for m in maybe(re.match(r'\[info\] (.*)$', line)):
+            return m.group(1)
 
 
 class FinishedParser(OutputParser):
