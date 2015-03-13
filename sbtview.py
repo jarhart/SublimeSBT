@@ -53,6 +53,7 @@ class SbtView(OnePerWindow):
     def show(self):
         self._update_panel_colors()
         self.window.run_command('show_panel', {'panel': 'output.sbt'})
+        sublime.set_timeout(self._show_selection, 0)
 
     def hide(self):
         self.window.run_command('hide_panel', {'panel': 'output.sbt'})
@@ -66,7 +67,9 @@ class SbtView(OnePerWindow):
         self.show()
         self._append_output(output)
         self._output_size = self.panel.size()
-        self.panel.show(self.panel.size())
+        self.panel.show(self._output_size)
+        self.panel.sel().clear()
+        self.panel.sel().add(sublime.Region(self._output_size, self._output_size))
 
     def clear_output(self):
         self._erase_output(sublime.Region(0, self.panel.size()))
@@ -128,6 +131,9 @@ class SbtView(OnePerWindow):
 
     def _normalize_lines(self, output):
         return output.replace('\r\n', '\n').replace('\033M', '\r')
+
+    def _show_selection(self):
+        self.panel.show(self.panel.sel()[0].begin(), True)
 
     def _strip_codes(self, output):
         return re.sub(r'\033\[[0-9;]+[mK]', '', output)
