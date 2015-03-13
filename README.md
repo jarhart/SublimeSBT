@@ -173,10 +173,21 @@ Project*** menu entry and putting settings in a "SublimeSBT" object inside of
         }
     }
 
+**history**
+
+  - An array that contains commands that should be added to the command
+    history when a project is opened.
+
 **history_length**
 
   - The maximum number of unique commands to keep in the command history.
     The default setting is 20.
+
+Project-Specific Configuring
+----------------------------
+If the file `.SublimeSBT_history` exists at the top level of a project, each
+line of that file will be added to the command history when the project is
+opened.
 
 Contributors
 ------------
