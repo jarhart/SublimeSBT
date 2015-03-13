@@ -21,13 +21,14 @@ class ErrorReport(object):
         self._set_current(None)
 
     def add_error(self, error):
-        if error.filename not in self._new_errors:
-            self._new_errors[error.filename] = {}
-        file_errors = self._new_errors[error.filename]
-        if error.line not in file_errors:
-            file_errors[error.line] = []
-        file_errors[error.line].append(error)
-        self._merge_errors()
+        if error.filename:
+            if error.filename not in self._new_errors:
+                self._new_errors[error.filename] = {}
+            file_errors = self._new_errors[error.filename]
+            if error.line not in file_errors:
+                file_errors[error.line] = []
+            file_errors[error.line].append(error)
+            self._merge_errors()
 
     def cycle(self):
         self._old_errors = self._new_errors

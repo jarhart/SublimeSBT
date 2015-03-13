@@ -43,6 +43,10 @@ class ErrorView(OnePerWindow):
         self.panel.sel().clear()
         self.panel.show(0)
 
+    def clear(self):
+        self.panel.run_command('sbt_show_error_text', {'text': ''})
+        self.panel.sel().clear()
+
     def _error_text(self, error):
         banner = ' -- %s --' % type(self).error_type_display[error.error_type]
         return '%s\n%s' % (banner, error.text)
