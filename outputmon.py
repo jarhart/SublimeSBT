@@ -73,7 +73,7 @@ class ErrorParser(AbstractErrorParser):
 
     @classmethod
     def start(cls, project, line):
-        for m in maybe(re.match(r'\[(error|warn)\]\s+(.+):(\d+):\s+(.+)$', line)):
+        for m in maybe(re.match(r'^\[(error|warn)\]\s+(.+?):(\d+):(?:(\d+):)?\s+(.+)$', line)):
             yield cls(project,
                       line=line,
                       label=m.group(1),
