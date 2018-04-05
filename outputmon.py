@@ -73,13 +73,13 @@ class ErrorParser(AbstractErrorParser):
 
     @classmethod
     def start(cls, project, line):
-        for m in maybe(re.match(r'\[(error|warn)\]\s+(.+):(\d+):\s+(.+)$', line)):
+        for m in maybe(re.match(r'^\[(error|warn)\]\s+(.+?):(\d+):(?:(\d+):)?\s+(.+)$', line)):
             yield cls(project,
                       line=line,
                       label=m.group(1),
                       filename=m.group(2),
                       lineno=int(m.group(3)),
-                      message=m.group(4))
+                      message=m.group(5))
 
     def __init__(self, project, line, label, filename, lineno, message):
         AbstractErrorParser.__init__(self, project, line, filename, lineno, message)
